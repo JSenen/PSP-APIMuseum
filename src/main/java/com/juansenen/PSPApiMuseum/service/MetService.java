@@ -2,6 +2,7 @@ package com.juansenen.PSPApiMuseum.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.juansenen.PSPApiMuseum.domain.Deparments;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
@@ -36,6 +37,10 @@ public class MetService {
 
     public Observable<ObjectsMain> getTotalObjects(){
         return this.metAPI.loadObjects();
+    }
+    public Observable<Deparments> getAllDeparments(){
+        return this.metAPI.loadDeparments();
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.juansenen.PSPApiMuseum.controller;
 
+import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.service.MetService;
@@ -18,19 +19,21 @@ import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
     public Label labelTotal;
-    public Label labelMessage;
     public Button buttonLoad;
     public Text txtTotal;
     public int totalObjects;
+    public TableView<Department> tableMain;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
 
-    public void prepareTableObjects(){
-        TableColumn<ObjectsByID, String> idColumn = new TableColumn<>("Id");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("objectID"));
+    public void prepareTableODepartment(){
+        TableColumn<Department, Integer> idColumn = new TableColumn<>("Id");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("departmentId"));
+
+        tableMain.getColumns().add(idColumn);
 
     }
 
@@ -41,7 +44,7 @@ public class AppController implements Initializable {
     }
 
     public void setTotalNumberObjects(){
-        labelMessage.setText("Cargando....");
+        txtTotal.setText("Cargando...");
         Consumer<ObjectsMain> totalObj = (info) -> {
             txtTotal.setText(String.valueOf(info.getTotal()));
         };
@@ -50,4 +53,5 @@ public class AppController implements Initializable {
         new Thread(totalObjectTask).start();
 
     }
+
 }

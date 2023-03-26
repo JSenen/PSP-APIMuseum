@@ -1,5 +1,6 @@
 package com.juansenen.PSPApiMuseum.service;
 
+import com.juansenen.PSPApiMuseum.domain.Deparments;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import io.reactivex.Observable;
@@ -14,6 +15,8 @@ public interface MetAPI {
 
     @GET("objects")
     Observable<ObjectsMain> loadObjects();    /** Obtener objetos */
+    @GET("departments")
+    Observable<Deparments> loadDeparments(); /** Obtener los departamentos*/
 
 
 }
