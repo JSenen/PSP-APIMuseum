@@ -2,6 +2,8 @@ package com.juansenen.PSPApiMuseum.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.juansenen.PSPApiMuseum.domain.Deparments;
+import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
@@ -9,6 +11,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import java.util.List;
 
 public class MetService {
 
@@ -36,6 +40,10 @@ public class MetService {
 
     public Observable<ObjectsMain> getTotalObjects(){
         return this.metAPI.loadObjects();
+    }
+    public Observable<List<Department>> getAllDeparments(){
+        return this.metAPI.loadDeparments().map(deparments -> deparments.getDepartments());
+
     }
 
 }

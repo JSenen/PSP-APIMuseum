@@ -1,32 +1,72 @@
 package com.juansenen.PSPApiMuseum.controller;
 
+import com.juansenen.PSPApiMuseum.domain.Deparments;
+import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.service.MetService;
+import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
 import io.reactivex.functions.Consumer;
+
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
     public Label labelTotal;
-    public Label labelMessage;
+    public Button buttonLoad;
+    public Text txtTotal;
+    public int totalObjects;
+    public TableView<Department> tableMain;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        prepareTableDepartment(); //Preparar la Tabla
+        setTotalDeparments();     //Cargar los datos de departamentos
+
+    }
+
+    public void prepareTableDepartment(){
+
+        TableColumn<Department, Integer> idColumn = new TableColumn<>("Id");        //Crear columna
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("departmentId"));   //Asociar a campo clase
+        TableColumn<Department, String> nameColumn = new TableColumn<>("Nombre");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
+
+        tableMain.getColumns().add(idColumn);   //Datos a la columna
+        tableMain.getColumns().add(nameColumn);
+
+    }
+
+    @FXML
+    public void loadTotalObjects (ActionEvent actionEvent){   //Boton pulsar para conocer número total de objetos
         setTotalNumberObjects();
 
     }
 
     public void setTotalNumberObjects(){
-        MetService metService = new MetService();
-        Consumer<ObjectsMain> totalObj = (info) -> {
-            labelTotal.setText(String.valueOf(info.getTotal()));
+        txtTotal.setText("Cargando...");
+        Consumer<ObjectsMain> totalObj = (info) -> {            //Creamos el consumidor
+            txtTotal.setText(String.valueOf(info.getTotal()));
         };
 
-        metService.getTotalObjects().subscribe(totalObj);
-
+        TotalObjectTask totalObjectTask = new TotalObjectTask(totalObj);  //Creamos un hilo
+        new Thread(totalObjectTask).start();                             // Ejecutamos hilo
 
     }
+    public void setTotalDeparments(){
+        MetService service = new MetService();
+        Consumer<List<Department>> dep = (info) -> {
+            tableMain.setItems(FXCollections.observableArrayList(info));
+        };
+        service.getAllDeparments().subscribe(dep);
+    }
+
 }
