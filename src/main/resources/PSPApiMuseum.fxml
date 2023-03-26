@@ -1,29 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="476.0" prefWidth="654.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="labelTotal" alignment="CENTER" layoutX="16.0" layoutY="49.0" prefHeight="23.0" prefWidth="117.0" text="Label" textAlignment="CENTER">
+      <Label fx:id="labelTotal" alignment="CENTER" layoutX="16.0" layoutY="49.0" prefHeight="23.0" prefWidth="117.0" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="18.0" />
          </font></Label>
       <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TOTAL DE OBJETOS" />
-      <Label fx:id="labelMessage" layoutX="380.0" layoutY="392.0" text="Label" />
-      <VBox layoutX="139.0" layoutY="72.0" prefHeight="284.0" prefWidth="444.0">
-         <children>
-            <TableView prefHeight="287.0" prefWidth="444.0">
-              <columns>
-                <TableColumn fx:id="tableObjects" prefWidth="75.0" text="C1" />
-              </columns>
-            </TableView>
-         </children>
-      </VBox>
+      <Label fx:id="labelMessage" layoutX="380.0" layoutY="392.0" />
+      <Button fx:id="buttonLoad" layoutX="151.0" layoutY="20.0" mnemonicParsing="false" onAction="#loadTotalObjects" text="Cargar" />
+      <Text fx:id="txtTotal" layoutX="60.0" layoutY="107.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
    </children>
 </AnchorPane>
