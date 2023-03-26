@@ -28,43 +28,45 @@ public class AppController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        prepareTableDepartment();
-
-        MetService service = new MetService();
-        Consumer<List<Department>> dep = (info) -> {
-            tableMain.setItems(FXCollections.observableArrayList(info));
-        };
-        service.getAllDeparments().subscribe(dep);
-
+        prepareTableDepartment(); //Preparar la Tabla
+        setTotalDeparments();     //Cargar los datos de departamentos
 
     }
 
     public void prepareTableDepartment(){
-        TableColumn<Department, Integer> idColumn = new TableColumn<>("Id");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("departmentId"));
+
+        TableColumn<Department, Integer> idColumn = new TableColumn<>("Id");        //Crear columna
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("departmentId"));   //Asociar a campo clase
         TableColumn<Department, String> nameColumn = new TableColumn<>("Nombre");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
 
-        tableMain.getColumns().add(idColumn);
+        tableMain.getColumns().add(idColumn);   //Datos a la columna
         tableMain.getColumns().add(nameColumn);
 
     }
 
     @FXML
-    public void loadTotalObjects (ActionEvent actionEvent){
+    public void loadTotalObjects (ActionEvent actionEvent){   //Boton pulsar para conocer número total de objetos
         setTotalNumberObjects();
 
     }
 
     public void setTotalNumberObjects(){
         txtTotal.setText("Cargando...");
-        Consumer<ObjectsMain> totalObj = (info) -> {
+        Consumer<ObjectsMain> totalObj = (info) -> {            //Creamos el consumidor
             txtTotal.setText(String.valueOf(info.getTotal()));
         };
 
-        TotalObjectTask totalObjectTask = new TotalObjectTask(totalObj);
-        new Thread(totalObjectTask).start();
+        TotalObjectTask totalObjectTask = new TotalObjectTask(totalObj);  //Creamos un hilo
+        new Thread(totalObjectTask).start();                             // Ejecutamos hilo
 
+    }
+    public void setTotalDeparments(){
+        MetService service = new MetService();
+        Consumer<List<Department>> dep = (info) -> {
+            tableMain.setItems(FXCollections.observableArrayList(info));
+        };
+        service.getAllDeparments().subscribe(dep);
     }
 
 }
