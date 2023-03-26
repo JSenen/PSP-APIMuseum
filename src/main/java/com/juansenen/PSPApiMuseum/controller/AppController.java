@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
 import java.net.URL;
@@ -25,6 +26,7 @@ public class AppController implements Initializable {
     public Text txtTotal;
     public int totalObjects;
     public TableView<Department> tableMain;
+    public int IDitemSelected;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,6 +52,20 @@ public class AppController implements Initializable {
         setTotalNumberObjects();
 
     }
+    @FXML
+    public void tableMouseClickItem(MouseEvent event) {      //Pulsar 2 veces sobre un elemento de la tabla
+
+        if (event.getClickCount() == 2) {
+            Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
+
+            IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id de la selección
+
+            // TODO Only for test purpose
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("You have selected " + selectedDepartment.getDisplayName());
+            alert.show();
+        }
+    }
 
     public void setTotalNumberObjects(){
         txtTotal.setText("Cargando...");
@@ -68,5 +84,6 @@ public class AppController implements Initializable {
         };
         service.getAllDeparments().subscribe(dep);
     }
+
 
 }

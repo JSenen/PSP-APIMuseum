@@ -18,5 +18,8 @@ public interface MetAPI {
     @GET("departments")
     Observable<Deparments> loadDeparments(); /** Obtener los departamentos*/
 
+    @GET("search?departmentId={departmentId}")
+    Observable<ObjectsMain> loadObjectsByDepartment();
+
 
 }
