@@ -1,7 +1,7 @@
 package com.juansenen.PSPApiMuseum.controller;
 
-import com.juansenen.PSPApiMuseum.domain.Deparments;
 import com.juansenen.PSPApiMuseum.domain.Department;
+import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.service.MetService;
 import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
@@ -21,12 +21,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
-    public Label labelTotal;
+
     public Button buttonLoad;
     public Text txtTotal;
     public int totalObjects;
+    public List<Integer> idObjects;
     public TableView<Department> tableMain;
+    public TableView<ObjectsByID> tableObjects;
     public int IDitemSelected;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -46,6 +49,13 @@ public class AppController implements Initializable {
         tableMain.getColumns().add(nameColumn);
 
     }
+    public void prepareTableDObjects(){
+
+        TableColumn<ObjectsByID, String> nameColumn = new TableColumn<>("Nombre");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("objectName"));
+
+        tableObjects.getColumns().add(nameColumn);   //Datos a la columna
+    }
 
     @FXML
     public void loadTotalObjects (ActionEvent actionEvent){   //Boton pulsar para conocer número total de objetos
@@ -59,12 +69,41 @@ public class AppController implements Initializable {
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
 
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id de la selección
-
+            getTotalObjectsByDepartment(IDitemSelected);
             // TODO Only for test purpose
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText("You have selected " + selectedDepartment.getDisplayName());
             alert.show();
         }
+    }
+
+    private void getTotalObjectsByDepartment(int iDitemSelected) {
+        /** Se hara una busqueda de todos los objetos del departamento seleccionado, pero filtrando
+         * tambien por los que se hayan expuestos, para asi acortar el listado
+         */
+        Consumer<ObjectsMain> numberObjIds = (info) -> {
+            idObjects = info.getObjectIDs(); //Recuperamos las Id de los Objetos del departamento
+            txtTotal.setText(String.valueOf(info.getTotal())); //Indicamos el numero de objetos en pantalla
+            System.out.println(info.getObjectIDs()); //TODO Borrar tras prueba
+            getObjectsById(iDitemSelected);  //TODO Terminar metodo (BUscar por ID con parametros para acortar)
+        };
+//        ObjectsByDepartmentTask objectsByDepartmentTask = new ObjectsByDepartmentTask(iDitemSelected,numberObjIds);
+//        new Thread(objectsByDepartmentTask).start();
+        MetService api = new MetService();
+        api.getALlObjectsIdDepartment(iDitemSelected).subscribe(numberObjIds);
+    }
+
+    private void getObjectsById(int iDitemSelected) {
+        MetService service = new MetService();
+        prepareTableDObjects();     //Preparamos la tabla
+        Consumer<ObjectsByID> object = (objectId) -> {
+            System.out.println(objectId.getObjectName()); //Borrar tras prueba
+            tableObjects.setItems(FXCollections.observableArrayList(objectId));
+
+        };
+        String cadena = "cat"; //TODO realizar tablero para introducir cadena de busqueda
+        service.getObjectByIdforDepart(iDitemSelected, cadena).subscribe(object);
+
     }
 
     public void setTotalNumberObjects(){

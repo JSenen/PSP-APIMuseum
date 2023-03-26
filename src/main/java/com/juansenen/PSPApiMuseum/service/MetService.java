@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.juansenen.PSPApiMuseum.domain.Deparments;
 import com.juansenen.PSPApiMuseum.domain.Department;
+import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
@@ -46,6 +47,13 @@ public class MetService {
     }
     public Observable<ObjectsMain> getALlObjectsIdDepartment(int id){
         return this.metAPI.loadObjectsByDepartment(id);
+    }
+    public Observable<ObjectsByID> getObjectById(int objectId){
+
+        return this.metAPI.loadOneObject(objectId);
+    }
+    public Observable<ObjectsByID> getObjectByIdforDepart(int idItem, String cadena){
+        return this.metAPI.loadObjectByIDdepart(idItem, cadena);
     }
 
 
