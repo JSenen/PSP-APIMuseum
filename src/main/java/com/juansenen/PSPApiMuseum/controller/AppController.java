@@ -31,9 +31,8 @@ public class AppController implements Initializable {
         prepareTableDepartment();
 
         MetService service = new MetService();
-        Consumer<Deparments> dep = (info) -> {
-            List<Department> departmentsList = info.getDepartments();
-            tableMain.setItems(FXCollections.observableArrayList(departmentsList));
+        Consumer<List<Department>> dep = (info) -> {
+            tableMain.setItems(FXCollections.observableArrayList(info));
         };
         service.getAllDeparments().subscribe(dep);
 
@@ -44,7 +43,7 @@ public class AppController implements Initializable {
         TableColumn<Department, Integer> idColumn = new TableColumn<>("Id");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("departmentId"));
         TableColumn<Department, String> nameColumn = new TableColumn<>("Nombre");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
 
         tableMain.getColumns().add(idColumn);
         tableMain.getColumns().add(nameColumn);
