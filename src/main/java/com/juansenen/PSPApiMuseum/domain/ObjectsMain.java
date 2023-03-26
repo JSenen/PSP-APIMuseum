@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Objects {
+public class ObjectsMain {
     private int total;
     private List<Integer> objectIDs;
 }
