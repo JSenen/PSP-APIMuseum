@@ -6,6 +6,7 @@ import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface MetAPI {
     /** interfaz de Retrofit que defina los endpoints de la API */
@@ -17,6 +18,10 @@ public interface MetAPI {
     Observable<ObjectsMain> loadObjects();    /** Obtener objetos */
     @GET("departments")
     Observable<Deparments> loadDeparments(); /** Obtener los departamentos*/
+
+    @GET("objects") /** Obtener los objetos totales de un Departamento**/
+    Observable<ObjectsMain> loadObjectsByDepartment(@Query("departmentIds") int departmentIds);
+
 
 
 }
