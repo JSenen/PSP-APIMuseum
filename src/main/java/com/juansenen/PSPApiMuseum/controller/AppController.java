@@ -28,7 +28,7 @@ public class AppController implements Initializable {
     public int totalObjects;
     public List<Integer> idObjects;
     public TableView<Department> tableMain;
-    public TableView<Integer> tableObjects; //TODO CAMBIAR
+    public TableView<ObjectsByID> tableObjects; //TODO CAMBIAR
     public int IDitemSelected;
 
 
@@ -52,8 +52,8 @@ public class AppController implements Initializable {
     }
     public void prepareTableDObjects(){
 
-        TableColumn<Integer, Integer> idColumn = new TableColumn<>("ID"); //TODO CAMBIAR
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("objectIDs"));
+        TableColumn<ObjectsByID, Integer> idColumn = new TableColumn<>("ID"); //TODO CAMBIAR
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("objectID"));
 
         tableObjects.getColumns().add(idColumn);   //Datos a la columna
     }
@@ -86,7 +86,7 @@ public class AppController implements Initializable {
             idObjects = info.getObjectIDs(); //Recuperamos las Id de los Objetos del departamento
             txtTotal.setText(String.valueOf(info.getTotal())); //Indicamos el numero de objetos en pantalla
             System.out.println(info.getObjectIDs()); //TODO Borrar tras prueba
-            getObjectsById(iDitemSelected);  //TODO Terminar metodo (BUscar por ID con parametros para acortar)
+            getObjectsByIdDepartment(iDitemSelected);  //TODO Terminar metodo (BUscar por ID con parametros para acortar)
         };
 //        ObjectsByDepartmentTask objectsByDepartmentTask = new ObjectsByDepartmentTask(iDitemSelected,numberObjIds);
 //        new Thread(objectsByDepartmentTask).start();
@@ -94,19 +94,39 @@ public class AppController implements Initializable {
         api.getALlObjectsIdDepartment(iDitemSelected).subscribe(numberObjIds);
     }
 
-    private void getObjectsById(int iDitemSelected) {
+    private void getObjectsByIdDepartment(int iDitemSelected) {
         MetService service = new MetService();
         prepareTableDObjects();     //Preparamos la tabla
         Consumer<ObjectsMain> object = (objectId) -> {
-            System.out.println(objectId.getObjectIDs()); //Borrar tras prueba
+            System.out.println(objectId.getObjectIDs()); //Borrar tras pruebas
             List<Integer> ids = objectId.getObjectIDs();
-            tableObjects.setItems(FXCollections.observableArrayList(ids)); //TODO CAMBIAR
+            setObjectsByID(ids);
 
         };
         String cadena = "sunflowers"; //TODO realizar tablero para introducir cadena de busqueda
         service.getObjectByIdforDepart(iDitemSelected, cadena).subscribe(object);
 
     }
+
+    private void setObjectsByID(List<Integer> ids) {
+        MetService service = new MetService();
+        /** Para recoger los objetos debemos recorrer las ID que pertenecen al departamento por que la API
+         * no filtra objetos por departamento. Solo aporta las ids de los objetos del departamento
+         */
+
+        for (Integer id : ids){
+            Consumer<ObjectsByID> objectsById = (info) -> {
+
+                tableObjects.setItems(FXCollections.observableArrayList(info)); //TODO CAMBIAR y llevar a task
+                //TODO arreglar solo pinta ultimo objeto
+                //TODO List<ObjectsByID> ???? en Consumer
+
+            };
+            service.getObjectById(id).subscribe(objectsById);
+        }
+
+    }
+
 
     public void setTotalNumberObjects(){
         txtTotal.setText("Cargando...");

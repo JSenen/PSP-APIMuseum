@@ -53,7 +53,7 @@ public class MetService {
         return this.metAPI.loadOneObject(objectId);
     }
     public Observable<ObjectsMain> getObjectByIdforDepart(int idItem, String cadena){
-        return this.metAPI.loadObjectByIDdepart(idItem, cadena);
+        return this.metAPI.loadObjectByIDdepart(idItem, cadena).map(objectsMain -> objectsMain);
     }
 
 
