@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -27,7 +28,7 @@ public class AppController implements Initializable {
     public int totalObjects;
     public List<Integer> idObjects;
     public TableView<Department> tableMain;
-    public TableView<ObjectsByID> tableObjects;
+    public TableView<Integer> tableObjects; //TODO CAMBIAR
     public int IDitemSelected;
 
 
@@ -51,10 +52,10 @@ public class AppController implements Initializable {
     }
     public void prepareTableDObjects(){
 
-        TableColumn<ObjectsByID, String> nameColumn = new TableColumn<>("Nombre");
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("objectName"));
+        TableColumn<Integer, Integer> idColumn = new TableColumn<>("ID"); //TODO CAMBIAR
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("objectIDs"));
 
-        tableObjects.getColumns().add(nameColumn);   //Datos a la columna
+        tableObjects.getColumns().add(idColumn);   //Datos a la columna
     }
 
     @FXML
@@ -96,12 +97,13 @@ public class AppController implements Initializable {
     private void getObjectsById(int iDitemSelected) {
         MetService service = new MetService();
         prepareTableDObjects();     //Preparamos la tabla
-        Consumer<ObjectsByID> object = (objectId) -> {
-            System.out.println(objectId.getObjectName()); //Borrar tras prueba
-            tableObjects.setItems(FXCollections.observableArrayList(objectId));
+        Consumer<ObjectsMain> object = (objectId) -> {
+            System.out.println(objectId.getObjectIDs()); //Borrar tras prueba
+            List<Integer> ids = objectId.getObjectIDs();
+            tableObjects.setItems(FXCollections.observableArrayList(ids)); //TODO CAMBIAR
 
         };
-        String cadena = "cat"; //TODO realizar tablero para introducir cadena de busqueda
+        String cadena = "sunflowers"; //TODO realizar tablero para introducir cadena de busqueda
         service.getObjectByIdforDepart(iDitemSelected, cadena).subscribe(object);
 
     }
