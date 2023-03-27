@@ -45,15 +45,13 @@ public class MetService {
     public Observable<List<Department>> getAllDeparments(){
         return this.metAPI.loadDeparments().map(deparments -> deparments.getDepartments());
     }
-    public Observable<ObjectsMain> getALlObjectsIdDepartment(int id){
-        return this.metAPI.loadObjectsByDepartment(id);
-    }
+
     public Observable<ObjectsByID> getObjectById(int objectId){
 
         return this.metAPI.loadOneObject(objectId);
     }
-    public Observable<ObjectsMain> getObjectByIdforDepart(int idItem, String cadena){
-        return this.metAPI.loadObjectByIDdepart(idItem, cadena).map(objectsMain -> objectsMain);
+    public Observable<ObjectsMain> getObjectByIdforDepart(int idItem){
+        return this.metAPI.loadObjectsByDepartment(idItem).map(objectsMain -> objectsMain);
     }
 
 

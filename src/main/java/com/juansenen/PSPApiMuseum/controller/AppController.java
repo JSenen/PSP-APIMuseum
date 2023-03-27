@@ -8,6 +8,7 @@ import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
 import io.reactivex.functions.Consumer;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,14 +28,16 @@ public class AppController implements Initializable {
     public Text txtTotal;
     public int totalObjects;
     public List<Integer> idObjects;
+    public ObservableList<Integer> idsObjectsFromDepartment;
+    public ComboBox<Integer> comboIDfromDepar;
     public TableView<Department> tableMain;
-    public TableView<ObjectsByID> tableObjects; //TODO CAMBIAR
+    public TableView<Integer> tableObjects; //TODO CAMBIAR
     public int IDitemSelected;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        prepareTableDepartment(); //Preparar la Tabla
+        prepareTableDepartment(); //Preparar la Tabla Departamentos
         setTotalDeparments();     //Cargar los datos de departamentos
 
     }
@@ -52,8 +55,8 @@ public class AppController implements Initializable {
     }
     public void prepareTableDObjects(){
 
-        TableColumn<ObjectsByID, Integer> idColumn = new TableColumn<>("ID"); //TODO CAMBIAR
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("objectID"));
+        TableColumn<Integer,Integer> idColumn = new TableColumn<>("Name"); //TODO CAMBIAR
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("objectId"));
 
         tableObjects.getColumns().add(idColumn);   //Datos a la columna
     }
@@ -69,7 +72,7 @@ public class AppController implements Initializable {
         if (event.getClickCount() == 2) {
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
 
-            IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id de la selección
+            IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
             getTotalObjectsByDepartment(IDitemSelected);
             // TODO Only for test purpose
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -79,53 +82,51 @@ public class AppController implements Initializable {
     }
 
     private void getTotalObjectsByDepartment(int iDitemSelected) {
-        /** Se hara una busqueda de todos los objetos del departamento seleccionado, pero filtrando
-         * tambien por los que se hayan expuestos, para asi acortar el listado
-         */
+        /** Buscamos todos las Ids Objetos que pertenecen a un Departamento. La API nos devuelve el ID de todos ellos */
+
         Consumer<ObjectsMain> numberObjIds = (info) -> {
             idObjects = info.getObjectIDs(); //Recuperamos las Id de los Objetos del departamento
             txtTotal.setText(String.valueOf(info.getTotal())); //Indicamos el numero de objetos en pantalla
             System.out.println(info.getObjectIDs()); //TODO Borrar tras prueba
-            getObjectsByIdDepartment(iDitemSelected);  //TODO Terminar metodo (BUscar por ID con parametros para acortar)
+            setObjectsByID(iDitemSelected);
         };
 //        ObjectsByDepartmentTask objectsByDepartmentTask = new ObjectsByDepartmentTask(iDitemSelected,numberObjIds);
 //        new Thread(objectsByDepartmentTask).start();
         MetService api = new MetService();
-        api.getALlObjectsIdDepartment(iDitemSelected).subscribe(numberObjIds);
+        api.getObjectByIdforDepart(iDitemSelected).subscribe(numberObjIds);
     }
 
-    private void getObjectsByIdDepartment(int iDitemSelected) {
+
+    private void setObjectsByID(int idDepartment) {
         MetService service = new MetService();
-        prepareTableDObjects();     //Preparamos la tabla
-        Consumer<ObjectsMain> object = (objectId) -> {
-            System.out.println(objectId.getObjectIDs()); //Borrar tras pruebas
-            List<Integer> ids = objectId.getObjectIDs();
-            setObjectsByID(ids);
-
-        };
-        String cadena = "sunflowers"; //TODO realizar tablero para introducir cadena de busqueda
-        service.getObjectByIdforDepart(iDitemSelected, cadena).subscribe(object);
-
-    }
-
-    private void setObjectsByID(List<Integer> ids) {
-        MetService service = new MetService();
-        /** Para recoger los objetos debemos recorrer las ID que pertenecen al departamento por que la API
+        /** Para recoger los objetos hemos recogido las ID que pertenecen al departamento por que la API
          * no filtra objetos por departamento. Solo aporta las ids de los objetos del departamento
          */
-
-        for (Integer id : ids){
-            Consumer<ObjectsByID> objectsById = (info) -> {
-
-                tableObjects.setItems(FXCollections.observableArrayList(info)); //TODO CAMBIAR y llevar a task
-                //TODO arreglar solo pinta ultimo objeto
-                //TODO List<ObjectsByID> ???? en Consumer
-
-            };
-            service.getObjectById(id).subscribe(objectsById);
+        idsObjectsFromDepartment = FXCollections.observableArrayList(); //Array Observable
+        for (Integer idsOb: idObjects){
+            idsObjectsFromDepartment.add(idsOb); //Añadimos los datos
         }
+        comboIDfromDepar.setItems(idsObjectsFromDepartment);
+
+
+////        for (Integer id : idObjects){
+////            Consumer<ObjectsByID> objectsById = (info) -> {
+////
+////                System.out.println(info.getObjectID());
+////                idObject.add(info.getObjectID());
+////                tableObjects.setItems(FXCollections.observableArrayList(info.getObjectID())); //TODO CAMBIAR y llevar a task
+////                //TODO arreglar solo pinta ultimo objeto
+////                //TODO List<ObjectsByID> ???? en Consumer
+////                //tableObjects.setItems(FXCollections.observableArrayList(info));
+////            };
+////            service.getObjectById(id).subscribe(objectsById);
+////            tableObjects.setItems(FXCollections.observableArrayList(idObjects)); //TODO CAMBIAR y llevar a task
+//
+//        }
 
     }
+
+
 
 
     public void setTotalNumberObjects(){

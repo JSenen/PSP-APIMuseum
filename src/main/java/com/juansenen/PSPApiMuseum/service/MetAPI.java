@@ -19,10 +19,8 @@ public interface MetAPI {
     @GET("departments")
     Observable<Deparments> loadDeparments(); /** Obtener los departamentos*/
 
-    @GET("objects") /** Obtener los objetos totales**/
-    Observable<ObjectsMain> loadObjectsByDepartment(@Query("departmentIds") int departmentId);
-    @GET("search") /** Obtener los objetos de un departamento. API nos veuelve las Id de los Objetos  **/
-    Observable<ObjectsMain> loadObjectByIDdepart (@Query("departmentIds") int departmentId,@Query("q") String cadena);
+    @GET("objects") /** Obtener los objetos totales de un Departamento**/
+    Observable<ObjectsMain> loadObjectsByDepartment(@Query("departmentIds") int departmentIds);
 
 
 
