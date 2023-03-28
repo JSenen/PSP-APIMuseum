@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ObjectsByIdList {
+public class ObjectsList {
 
-    public List<ObjectsByID> objects;
+    public List<ObjectsByID> objectsByIDList;
 }

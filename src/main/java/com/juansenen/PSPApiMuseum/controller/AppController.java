@@ -4,13 +4,10 @@ import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.service.MetService;
-import com.juansenen.PSPApiMuseum.task.ObjectsByDepartmentTask;
 import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
-import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,9 +33,8 @@ public class AppController implements Initializable {
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
     public List<String> title = new ArrayList<>();      //Lista para guardar titulos de Objetos en memoria
     public ObservableList<Integer> idsObjectsFromDepartment;
-    public ObservableList<String> titleObjectsFromDepartment;
     @FXML
-    public ComboBox<Integer> comboIDfromDepar;
+    public ObservableList<ObjectsByID> titleObjectsFromDepartment = FXCollections.observableArrayList();
     @FXML
     public TableView<Department> tableMain;
     @FXML
@@ -54,7 +50,7 @@ public class AppController implements Initializable {
 
 
     }
-
+    /** Tabla Departamentos **/
     public void prepareTableDepartment(){
 
         TableColumn<Department, Integer> idColumn = new TableColumn<>("Id");        //Crear columna
@@ -66,12 +62,14 @@ public class AppController implements Initializable {
         tableMain.getColumns().add(nameColumn);
 
     }
+    /** Tabla Titulos de Obras **/
     public void prepareTableObjects(){
 
         TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("TITLE");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 
         tableObjects.getColumns().add(titleColumn); //Dato titulo
+
     }
 
     @FXML
@@ -79,7 +77,7 @@ public class AppController implements Initializable {
         setTotalNumberObjects();
 
     }
-
+    /**Acción seleccionar un Departamento en la tabla Departamentos **/
     @FXML
     public void tableMouseClickItem(MouseEvent event) {      //Pulsar 1 veces sobre un elemento de la tabla
 
@@ -88,89 +86,48 @@ public class AppController implements Initializable {
 
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
             getTotalObjectsByDepartment();
-            System.out.println(IDitemSelected); //TODO Borrar tras pruebas
 
             // TODO Only for test purpose
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Ha seleccionado " + selectedDepartment.getDisplayName());
+            alert.setContentText("SE HA CARGADO SU SELECCION  " + selectedDepartment.getDisplayName());
             alert.show();
         }
     }
+    /** Buscar Total de Objetos que corresponden al Departamento*/
     private void getTotalObjectsByDepartment() {
-        /** BUSCAMOS EL TOTAL DE OBJETOS DEL DEPARTAMENTO*/
+
         MetService service = new MetService();
         Consumer<ObjectsMain> deparObjs = (info) ->{
             txtTotal.setText(String.valueOf(info.getTotal()));
             idObjects.addAll(info.getObjectIDs());
-            System.out.println(idObjects);
             getObjectstoTable(idObjects);
 
         };
         service.getObjectByIdforDepart(IDitemSelected,cadena).subscribe(deparObjs);
 
     }
-    public void getObjectstoTable(List<Integer> idObjects){ //TODO Llenar tabla Objetos
+    public void getObjectstoTable(List<Integer> idObjects){ //Recuperamos datos objetos segun ids de los Departamentos
+
         MetService service = new MetService();
-        titleObjectsFromDepartment = FXCollections.observableArrayList();
-        for (Integer ids: idObjects){
+
+        for (Integer ids: idObjects){       //Recorremos el List de Ids que pertenecen al Departamento
             Consumer<ObjectsByID> obj = (info) -> {
-                if (info.getTitle().equals("")){     //La Api en ocasiones no asigna titulo a una obra
-                    title.add("No Title");
-                }else{
-                    title.add(info.getTitle());
-                }
-                for(String ti:title){
-                    System.out.println(ti);
-                }
+
+                titleObjectsFromDepartment.add(new ObjectsByID(info.getObjectID(), info.getAccessionNumber(),
+                                info.getAccessionYear(),info.isPublicDomain(), info.getPrimaryImage(),
+                                info.getTitle(),info.getCountry()));
+
             };
             service.getObjectById(ids).subscribe(obj);
         }
-        titleObjectsFromDepartment.addAll(title);
-
-
+        prepareTableObjects();
+        tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
 
     }
-
-
-    private void getObjectsDataByDepartment(ActionEvent event){
-//        MetService service = new MetService();
-//        ObservableList<Integer> ids = FXCollections.observableList(idObjects) ; // nuestro ObservableArray de ids
-//        ids.forEach((getObj) -> {                               // recorremos el ObservableList y recueramos titulos de obras
-//            Consumer<ObjectsByID> objectsTitle = (info) -> {
-//                System.out.println(info.getTitle());
-//            };
-//            service.getObjectById(getObj).subscribe(objectsTitle);
-//        });
-        for(Integer ids: idObjects){
-            System.out.println(ids);
-        }
-    }
-
-
-
-
-    private void setComboObjectsID(int idDepartment) {
-
-        /** Para recoger los objetos hemos recogido las ID que pertenecen al departamento por que la API
-         * mostramos las ID de los Objetos por Departamento en un ComboBox
-         */
-        idsObjectsFromDepartment = FXCollections.observableArrayList();
-        titleObjectsFromDepartment = FXCollections.observableArrayList();
-
-        //Añadimos los datos
-        idsObjectsFromDepartment.addAll(idObjects); //Añadimos todos los ids a una ObservableArrayList
-        comboIDfromDepar.setItems(idsObjectsFromDepartment); //Rellenamos ComboBox con las Ids
-
-        comboIDfromDepar.setOnAction((evento) -> {          //Listener en el comboBox
-            int selectedIndex = comboIDfromDepar.getSelectionModel().getSelectedIndex();
-            Object selectedItem = comboIDfromDepar.getSelectionModel().getSelectedItem();
-
-            System.out.println("Selection made: [" + selectedIndex + "] " + selectedItem);
-            System.out.println("   ComboBox.getValue(): " + comboIDfromDepar.getValue());
-            //getObjectstoTable(idObjects);
-        });
-        //getObjectById(comboIDfromDepar.getValue());
-
+    @FXML
+    public void setTotalObjects(ActionEvent actionEvent){   //Llebar los objetos a la tabla
+        prepareTableObjects();
+        tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
 
     }
 
@@ -191,6 +148,8 @@ public class AppController implements Initializable {
         };
         service.getAllDeparments().subscribe(dep);
     }
+
+
 
 
 

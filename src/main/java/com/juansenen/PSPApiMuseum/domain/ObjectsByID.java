@@ -14,15 +14,15 @@ public class ObjectsByID {
     private String accessionYear;
     private boolean isPublicDomain;
     private String primaryImage;
-    private List<String> additionalImages;
-    private String department;
-    private String objectName;
+//    private List<String> additionalImages;
+//    private String department;
+//    private String objectName;
     private String title;
-    private String culture;
-    private String period;
-    private String artistDisplayName;
-    private String artistBeginDate;
-    private String artistEndDate;
-    private String medium;
+//    private String culture;
+//    private String period;
+//    private String artistDisplayName;
+//    private String artistBeginDate;
+//    private String artistEndDate;
+//    private String medium;
     private String country;
 }
