@@ -14,6 +14,7 @@
       <Text fx:id="txtTotal" layoutX="26.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="98.0" />
       <TableView fx:id="tableMain" layoutX="16.0" layoutY="89.0" onMouseClicked="#tableMouseClickItem" prefHeight="221.0" prefWidth="322.0" />
       <ComboBox fx:id="comboIDfromDepar" layoutX="190.0" layoutY="348.0" prefWidth="150.0" />
-      <TextArea fx:id="textAreaObjects" layoutX="451.0" layoutY="69.0" prefHeight="274.0" prefWidth="391.0" />
+      <TextArea fx:id="textAreaObjects" layoutX="398.0" layoutY="40.0" prefHeight="82.0" prefWidth="117.0" />
+      <TableView fx:id="tableObjects" layoutX="515.0" layoutY="131.0" prefHeight="200.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

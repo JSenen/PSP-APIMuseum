@@ -3,10 +3,13 @@ package com.juansenen.PSPApiMuseum.controller;
 import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
+import com.juansenen.PSPApiMuseum.service.MetAPI;
 import com.juansenen.PSPApiMuseum.service.MetService;
 import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
+import io.reactivex.schedulers.Schedulers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -38,18 +41,17 @@ public class AppController implements Initializable {
     @FXML
     public TableView<Department> tableMain;
     @FXML
+    public TableView<String> tableObjects;
+    @FXML
     public TextArea textAreaObjects;
     public int IDitemSelected;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        prepareTableDepartment(); //Preparar la Tabla Departamentos
+        prepareTableDepartment(); //Inicializa la Tabla Departamentos
         setTotalDeparments();     //Cargar los datos de departamentos
-
-
-
-
+        prepareTableObjects();    //Inicializa tabla objetos
     }
 
     public void prepareTableDepartment(){
@@ -62,6 +64,13 @@ public class AppController implements Initializable {
         tableMain.getColumns().add(idColumn);   //Datos a la columna
         tableMain.getColumns().add(nameColumn);
 
+    }
+    public void prepareTableObjects(){
+
+        TableColumn<String, String> titleColumn = new TableColumn<>("Título");
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        tableObjects.getColumns().add(titleColumn);
     }
 
     @FXML
@@ -103,6 +112,7 @@ public class AppController implements Initializable {
             idObjects = info.getObjectIDs(); //Recuperamos las Id de los Objetos del departamento y las guardamos en memoria
             txtTotal.setText(String.valueOf(info.getTotal())); //Indicamos el numero de objetos en pantalla
             setObjectsByID(iDitemSelected);
+
         };
         //TODO Llevar al task
         MetService api = new MetService();
@@ -112,24 +122,23 @@ public class AppController implements Initializable {
 
     private void setObjectsByID(int idDepartment) {
         MetService service = new MetService();
+        prepareTableObjects();
         /** Para recoger los objetos hemos recogido las ID que pertenecen al departamento por que la API
          */
-        idsObjectsFromDepartment = FXCollections.observableArrayList(); //Array Observable
+        idsObjectsFromDepartment = FXCollections.observableArrayList();
         titleObjectsFromDepartment = FXCollections.observableArrayList();
-        for (Integer idsOb: idObjects){
-            idsObjectsFromDepartment.add(idsOb); //Añadimos los datos
-            Consumer<ObjectsByID> obj = (info) -> {
-                titleObjectsFromDepartment.add(info.getTitle());
-            };
-        }
+
+        //Añadimos los datos
+        idsObjectsFromDepartment.addAll(idObjects); //Añadimos todos los ids a una ObservableArrayList
         comboIDfromDepar.setItems(idsObjectsFromDepartment); //Rellenamos ComboBox con las Id
 
-        comboIDfromDepar.setOnAction((evento) -> {          //Listener en el comboBoc
+        comboIDfromDepar.setOnAction((evento) -> {          //Listener en el comboBox
             int selectedIndex = comboIDfromDepar.getSelectionModel().getSelectedIndex();
             Object selectedItem = comboIDfromDepar.getSelectionModel().getSelectedItem();
 
             System.out.println("Selection made: [" + selectedIndex + "] " + selectedItem);
             System.out.println("   ComboBox.getValue(): " + comboIDfromDepar.getValue());
+            getObjectstoTable(idObjects);
         });
 
 
@@ -156,6 +165,19 @@ public class AppController implements Initializable {
             tableMain.setItems(FXCollections.observableArrayList(info));
         };
         service.getAllDeparments().subscribe(dep);
+    }
+
+    public void getObjectstoTable(List<Integer> idObjects){ //TODO POR ARREGLAR
+        MetService service = new MetService();
+        for (Integer ids: idObjects){
+            Consumer<ObjectsByID> obj = (info) -> {
+                title.add(info.getTitle());
+            };
+            service.getObjectById(ids).subscribe(obj);
+        }
+        titleObjectsFromDepartment.addAll(title);
+        tableObjects.setItems(titleObjectsFromDepartment);
+
     }
 
 
