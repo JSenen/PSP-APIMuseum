@@ -3,13 +3,10 @@ package com.juansenen.PSPApiMuseum.controller;
 import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
-import com.juansenen.PSPApiMuseum.service.MetAPI;
 import com.juansenen.PSPApiMuseum.service.MetService;
 import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
-import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
-import io.reactivex.schedulers.Schedulers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -82,14 +79,14 @@ public class AppController implements Initializable {
     @FXML
     public void tableMouseClickItem(MouseEvent event) {      //Pulsar 2 veces sobre un elemento de la tabla
 
-        if (event.getClickCount() == 1) {
+        if (event.getClickCount() == 2) {
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
 
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
             getTotalObjectsByDepartment(IDitemSelected);
             // TODO Only for test purpose
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("You have selected " + selectedDepartment.getDisplayName());
+            alert.setContentText("Ha seleccionado " + selectedDepartment.getDisplayName());
             alert.show();
         }
     }
@@ -97,9 +94,7 @@ public class AppController implements Initializable {
     private void getObjectById(Integer selectedID) {
         textAreaObjects = new TextArea();
         Consumer<ObjectsByID> obj = (info) -> {
-            textAreaObjects.setText(info.getTitle());
-            textAreaObjects.setText(info.getObjectName());
-            textAreaObjects.setText(info.getPeriod());
+            System.out.println(info.getTitle()); //TODO Borrar tras prueba
         };
         MetService api = new MetService();
         api.getObjectById(selectedID).subscribe(obj);
@@ -111,7 +106,7 @@ public class AppController implements Initializable {
         Consumer<ObjectsMain> numberObjIds = (info) -> {
             idObjects = info.getObjectIDs(); //Recuperamos las Id de los Objetos del departamento y las guardamos en memoria
             txtTotal.setText(String.valueOf(info.getTotal())); //Indicamos el numero de objetos en pantalla
-            setObjectsByID(iDitemSelected);
+            setComboObjectsID(iDitemSelected);
 
         };
         //TODO Llevar al task
@@ -120,17 +115,18 @@ public class AppController implements Initializable {
     }
 
 
-    private void setObjectsByID(int idDepartment) {
+    private void setComboObjectsID(int idDepartment) {
         MetService service = new MetService();
-        prepareTableObjects();
+
         /** Para recoger los objetos hemos recogido las ID que pertenecen al departamento por que la API
+         * mostramos las ID de los Objetos por Departamento en un ComboBox
          */
         idsObjectsFromDepartment = FXCollections.observableArrayList();
         titleObjectsFromDepartment = FXCollections.observableArrayList();
 
         //Añadimos los datos
         idsObjectsFromDepartment.addAll(idObjects); //Añadimos todos los ids a una ObservableArrayList
-        comboIDfromDepar.setItems(idsObjectsFromDepartment); //Rellenamos ComboBox con las Id
+        comboIDfromDepar.setItems(idsObjectsFromDepartment); //Rellenamos ComboBox con las Ids
 
         comboIDfromDepar.setOnAction((evento) -> {          //Listener en el comboBox
             int selectedIndex = comboIDfromDepar.getSelectionModel().getSelectedIndex();
@@ -140,6 +136,7 @@ public class AppController implements Initializable {
             System.out.println("   ComboBox.getValue(): " + comboIDfromDepar.getValue());
             getObjectstoTable(idObjects);
         });
+        getObjectById(comboIDfromDepar.getValue());
 
 
 
