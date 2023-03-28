@@ -25,14 +25,12 @@ import java.util.ResourceBundle;
 public class AppController implements Initializable {
 
     @FXML
-    public Button buttonLoad, butSelectObjects;
+    public Button buttonLoad;
 
     @FXML
-    public Text txtTotal;
-    public int totalObjects;
+    public Text txtTotal, idDepartment;
+    //public int totalObjects;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
-    public List<String> title = new ArrayList<>();      //Lista para guardar titulos de Objetos en memoria
-    public ObservableList<Integer> idsObjectsFromDepartment;
     @FXML
     public ObservableList<ObjectsByID> titleObjectsFromDepartment = FXCollections.observableArrayList();
     @FXML
@@ -41,15 +39,17 @@ public class AppController implements Initializable {
     public TableView<ObjectsByID> tableObjects;
     public int IDitemSelected;
     public String cadena = "sunflowers"; //TODO llevarse cadena a inputext
+    public Boolean isHighlight = true;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
-        setTotalDeparments();     //Cargar los datos de departamentos
-
-
+        prepareTableObjects();    //Inicializar tabla Objetos
+        setTotalDeparments();     //Cargar los nombres de departamentos a su tabla
     }
+
+
     /** Tabla Departamentos **/
     public void prepareTableDepartment(){
 
@@ -69,9 +69,11 @@ public class AppController implements Initializable {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 
         tableObjects.getColumns().add(titleColumn); //Dato titulo
+        //idObjects = null; //Borramos registro
+
 
     }
-
+    /** Objetos totales en el Museo **/
     @FXML
     public void loadTotalObjects (ActionEvent actionEvent){   //Boton pulsar para conocer número total de objetos
         setTotalNumberObjects();
@@ -79,12 +81,13 @@ public class AppController implements Initializable {
     }
     /**Acción seleccionar un Departamento en la tabla Departamentos **/
     @FXML
-    public void tableMouseClickItem(MouseEvent event) {      //Pulsar 1 veces sobre un elemento de la tabla
+    public void tableMouseClickItem(MouseEvent event) {
 
-        if (event.getClickCount() == 2) {
+        if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir departamento
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
 
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
+            idDepartment.setText(String.valueOf(IDitemSelected));
             getTotalObjectsByDepartment();
 
             // TODO Only for test purpose
@@ -93,20 +96,23 @@ public class AppController implements Initializable {
             alert.show();
         }
     }
-    /** Buscar Total de Objetos que corresponden al Departamento*/
+    /** Buscar Total de Ids Objetos que corresponden al Departamento*/
     private void getTotalObjectsByDepartment() {
-
+        idObjects.clear();
         MetService service = new MetService();
         Consumer<ObjectsMain> deparObjs = (info) ->{
+            txtTotal.setText("");
             txtTotal.setText(String.valueOf(info.getTotal()));
-            idObjects.addAll(info.getObjectIDs());
-            getObjectstoTable(idObjects);
+            idObjects.addAll(info.getObjectIDs()); //Añadimos a la lista los IDs de los objetos del departamento
+            getObjectstoTable(idObjects);          //Buscamos todos los Objetos de las anteriores IDs
 
         };
         service.getObjectByIdforDepart(IDitemSelected,cadena).subscribe(deparObjs);
 
+
     }
-    public void getObjectstoTable(List<Integer> idObjects){ //Recuperamos datos objetos segun ids de los Departamentos
+    /** Recuperar los datos individuales de cada objeto por su Id **/
+    public void getObjectstoTable(List<Integer> idObjects){
 
         MetService service = new MetService();
 
@@ -120,21 +126,15 @@ public class AppController implements Initializable {
             };
             service.getObjectById(ids).subscribe(obj);
         }
-        prepareTableObjects();
+
         tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
 
     }
-    @FXML
-    public void setTotalObjects(ActionEvent actionEvent){   //Llebar los objetos a la tabla
-        prepareTableObjects();
-        tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
-
-    }
-
     public void setTotalNumberObjects(){
         txtTotal.setText("Cargando...");
         Consumer<ObjectsMain> totalObj = (info) -> {            //Creamos el consumidor
             txtTotal.setText(String.valueOf(info.getTotal()));
+
         };
 
         TotalObjectTask totalObjectTask = new TotalObjectTask(totalObj);  //Creamos un hilo

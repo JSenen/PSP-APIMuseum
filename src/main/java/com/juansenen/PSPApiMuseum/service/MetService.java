@@ -51,6 +51,4 @@ public class MetService {
         return this.metAPI.loadObjectsByDepartment(idItem,cadena).map(objectsMain -> objectsMain);
     }
 
-
-
 }
