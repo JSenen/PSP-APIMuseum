@@ -10,6 +10,7 @@ import java.util.List;
 public class ObjectsByDepartmentTask extends Task<ObjectsMain> {
     public MetService api;
     public int idDeparment;
+    public String cadena;
     public boolean isOnView,hasImages,isHighlight; //TODO filtros
 
     public Consumer<ObjectsMain> user;
@@ -22,7 +23,7 @@ public class ObjectsByDepartmentTask extends Task<ObjectsMain> {
     @Override
     protected ObjectsMain call() throws Exception {
         api = new MetService();
-        api.getObjectByIdforDepart(idDeparment);
+        api.getObjectByIdforDepart(idDeparment,cadena);
         return null;
     }
 }
