@@ -38,9 +38,7 @@ public class AppController implements Initializable {
     @FXML
     public TableView<Department> tableMain;
     @FXML
-    public TableView<String> tableObjects;
-    @FXML
-    public TextArea textAreaObjects;
+    public TableView<ObjectsMain> tableIds;
     public int IDitemSelected;
 
 
@@ -48,7 +46,7 @@ public class AppController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
         setTotalDeparments();     //Cargar los datos de departamentos
-        prepareTableObjects();    //Inicializa tabla objetos
+
     }
 
     public void prepareTableDepartment(){
@@ -62,12 +60,12 @@ public class AppController implements Initializable {
         tableMain.getColumns().add(nameColumn);
 
     }
-    public void prepareTableObjects(){
+    public void prepareTableIDs(){
 
-        TableColumn<String, String> titleColumn = new TableColumn<>("Título");
-        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        TableColumn<ObjectsMain, Integer> idColumn = new TableColumn<>("IDs");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("objectIDs"));
 
-        tableObjects.getColumns().add(titleColumn);
+        tableIds.getColumns().add(idColumn);
     }
 
     @FXML
@@ -84,6 +82,9 @@ public class AppController implements Initializable {
 
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
             getTotalObjectsByDepartment(IDitemSelected);
+
+            System.out.println(IDitemSelected); //TODO Borrar tras pruebas
+            setTableIds();
             // TODO Only for test purpose
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText("Ha seleccionado " + selectedDepartment.getDisplayName());
@@ -91,13 +92,15 @@ public class AppController implements Initializable {
         }
     }
 
-    private void getObjectById(Integer selectedID) {
-        textAreaObjects = new TextArea();
-        Consumer<ObjectsByID> obj = (info) -> {
-            System.out.println(info.getTitle()); //TODO Borrar tras prueba
+    private void setTableIds() {    //TODO ARREGLAR!!!!!!
+        MetService service = new MetService();
+        Consumer<List<Department>> dep = (info) -> {
+            tableMain.setItems(FXCollections.observableArrayList(info));
         };
-        MetService api = new MetService();
-        api.getObjectById(selectedID).subscribe(obj);
+        service.getAllDeparments().subscribe(dep);
+        prepareTableIDs();    //Inicializa tabla objetos
+        idsObjectsFromDepartment.addAll(idObjects); //TODO Pasar Ids a Table
+
     }
 
     private void getTotalObjectsByDepartment(int iDitemSelected) {
@@ -105,8 +108,9 @@ public class AppController implements Initializable {
 
         Consumer<ObjectsMain> numberObjIds = (info) -> {
             idObjects = info.getObjectIDs(); //Recuperamos las Id de los Objetos del departamento y las guardamos en memoria
-            txtTotal.setText(String.valueOf(info.getTotal())); //Indicamos el numero de objetos en pantalla
-            setComboObjectsID(iDitemSelected);
+            txtTotal.setText(String.valueOf(info.getTotal())); //Indicamos el numero de objetos en pantalla //TODO Cambiar a etiqueta Departamentos visible
+            //setComboObjectsID(iDitemSelected);
+
 
         };
         //TODO Llevar al task
@@ -116,7 +120,6 @@ public class AppController implements Initializable {
 
 
     private void setComboObjectsID(int idDepartment) {
-        MetService service = new MetService();
 
         /** Para recoger los objetos hemos recogido las ID que pertenecen al departamento por que la API
          * mostramos las ID de los Objetos por Departamento en un ComboBox
@@ -134,9 +137,11 @@ public class AppController implements Initializable {
 
             System.out.println("Selection made: [" + selectedIndex + "] " + selectedItem);
             System.out.println("   ComboBox.getValue(): " + comboIDfromDepar.getValue());
-            getObjectstoTable(idObjects);
+            //getObjectstoTable(idObjects);
         });
-        getObjectById(comboIDfromDepar.getValue());
+        //getObjectById(comboIDfromDepar.getValue());
+
+
 
 
 
@@ -173,7 +178,7 @@ public class AppController implements Initializable {
             service.getObjectById(ids).subscribe(obj);
         }
         titleObjectsFromDepartment.addAll(title);
-        tableObjects.setItems(titleObjectsFromDepartment);
+        //tableIds.setItems(titleObjectsFromDepartment);
 
     }
 
