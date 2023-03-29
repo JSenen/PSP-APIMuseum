@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableView;
+import javafx.scene.text.Text;
 
 import java.util.List;
 
@@ -18,17 +19,20 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
     private ObservableList<ObjectsByID> titleObjectsFromDepartment;
     private TableView<ObjectsByID> tableObjects;;
     private ProgressIndicator progressIndicator;
+    private Text messageDownload;
 
     private int ids;
     public GetObjectsByIdsTask(List<Integer> idObjects,
                                ObservableList <ObjectsByID> titleObjectsFromDepartment,
                                TableView<ObjectsByID> tableObjects,
-                               ProgressIndicator progressIndicator) {
+                               ProgressIndicator progressIndicator,
+                               Text messageDownload) {
 
         this.idObjects = idObjects;
         this.titleObjectsFromDepartment = titleObjectsFromDepartment;
         this.tableObjects = tableObjects;
         this.progressIndicator = progressIndicator;
+        this.messageDownload = messageDownload;
 
     }
 
@@ -36,6 +40,7 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
     protected ObjectsByID call() throws Exception {
         service = new MetService();
         progressIndicator.setVisible(true);
+        messageDownload.setText("Cargando ...");
         for (Integer ids: idObjects){       //Recorremos el List de Ids que pertenecen al Departamento
 
             Consumer<ObjectsByID> obj = (info) -> {
@@ -51,6 +56,7 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
         }
         tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
         progressIndicator.setVisible(false);
+        messageDownload.setText("");
 
         return null;
     }

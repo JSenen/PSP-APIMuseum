@@ -30,11 +30,13 @@ public class AppController implements Initializable {
     @FXML
     public Button buttonLoad;
     @FXML
+    public TextField textFieldSearch; //Se usa para especificar en las busquedas de objetos
+    @FXML
     public ProgressIndicator progressIndicator;
     //public ObservableList<ObjectsMain> dataObjectMain = FXCollections.observableArrayList();
 
     @FXML
-    public Text txtTotal,txtTotalDepart;
+    public Text txtTotal,txtTotalDepart,messageDownload;
     public int partes;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
     //Observable List para la table de Objetos por titulo
@@ -46,12 +48,11 @@ public class AppController implements Initializable {
     public TableView<ObjectsByID> tableObjects;
 
     public int IDitemSelected;  //Id del Departamento seleccionado
-
-    public String cadena = "cat"; /** Filtro de busqueda por defecto para acortar las busquedas */
-
+    public String cadena = "sunflowers";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println(cadena); //TODO borrar tras pruebas
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
         prepareTableObjects();    //Inicializar tabla Objetos
         setTotalDeparments();     //Cargar los nombres de departamentos a tabla inicial.
@@ -62,12 +63,9 @@ public class AppController implements Initializable {
     /** Tabla Departamentos **/
     public void prepareTableDepartment(){
 
-        TableColumn<Department, Integer> idColumn = new TableColumn<>("Id");        //Crear columna
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("departmentId"));   //Asociar a campo clase
         TableColumn<Department, String> nameColumn = new TableColumn<>("Nombre");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
 
-        tableMain.getColumns().add(idColumn);   //Datos a la columna
         tableMain.getColumns().add(nameColumn);
     }
     /** Tabla Titulos de Obras **/
@@ -92,6 +90,8 @@ public class AppController implements Initializable {
         if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir departamento
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
+            cadena = textFieldSearch.getText();
+            System.out.printf(cadena);//TODO BORRAR TRAS PRUEBAS;
             getTotalObjectsByDepartment();
         }
     }
@@ -107,13 +107,15 @@ public class AppController implements Initializable {
             getObjectstoTable(idObjects);
 
         };
-        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected,cadena,deparObjs,progressIndicator);
+        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected,cadena,deparObjs,
+                progressIndicator);
         new Thread(getIDsFromDepartmentTask).start();
     }
     /** Recuperar los datos individuales de cada objeto por su Id **/
     public void getObjectstoTable(List<Integer> idObjects){ //TODO Hacer 2 hilos. 1 coge id y luego mandar a llenar tabla
 
-        GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,tableObjects,progressIndicator);
+        GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,
+                tableObjects,progressIndicator,messageDownload);
         new Thread(getObjectsByIdsTask).start();
         tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
     }
