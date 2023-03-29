@@ -31,24 +31,24 @@ public class AppController implements Initializable {
 
     @FXML
     public Text txtTotal, idDepartment;
-    //public int totalObjects;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
+    //Observable List para la table de Objetos por titulo
     @FXML
     public ObservableList<ObjectsByID> titleObjectsFromDepartment = FXCollections.observableArrayList();
     @FXML
     public TableView<Department> tableMain;
     @FXML
     public TableView<ObjectsByID> tableObjects;
-    public int IDitemSelected;
-    public String cadena = "cat"; //TODO llevarse cadena a inputext
-    public Boolean isHighlight = true;
+    public int IDitemSelected;  //Id del Departamento seleccionado
+
+    public String cadena = "cat"; /** Filtro de busqueda por defecto para acortar las busquedas */
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
         prepareTableObjects();    //Inicializar tabla Objetos
-        setTotalDeparments();     //Cargar los nombres de departamentos a su tabla
+        setTotalDeparments();     //Cargar los nombres de departamentos a tabla inicial.
     }
 
 
