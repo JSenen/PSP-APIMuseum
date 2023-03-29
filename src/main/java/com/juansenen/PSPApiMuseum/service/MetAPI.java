@@ -22,7 +22,7 @@ public interface MetAPI {
     Observable<Deparments> loadDeparments(); /** Obtener los departamentos con Id y Nombre*/
 
     @GET("search") /** Obtener datos de los objetos con diferentes filtros de busqueda **/
-    Observable<ObjectsMain> loadObjectsByDepartment(@Query("departmentIds") int departmentIds, @Query("q") String cadena);
+    Observable<ObjectsMain> loadObjectsByDepartment(@Query("departmentId") int departmentIds, @Query("q") String cadena);
 
 
 
