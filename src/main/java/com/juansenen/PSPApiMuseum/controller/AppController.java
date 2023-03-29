@@ -6,9 +6,9 @@ import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.service.MetService;
 import com.juansenen.PSPApiMuseum.task.GetIDsFromDepartmentTask;
 import com.juansenen.PSPApiMuseum.task.GetObjectsByIdsTask;
+import com.juansenen.PSPApiMuseum.task.GetTotalDepartmentTask;
 import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
 import io.reactivex.functions.Consumer;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.net.URL;
@@ -28,9 +29,13 @@ public class AppController implements Initializable {
 
     @FXML
     public Button buttonLoad;
+    @FXML
+    public ProgressIndicator progressIndicator;
+    //public ObservableList<ObjectsMain> dataObjectMain = FXCollections.observableArrayList();
 
     @FXML
-    public Text txtTotal, idDepartment;
+    public Text txtTotal,txtTotalDepart;
+    public int partes;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
     //Observable List para la table de Objetos por titulo
     @FXML
@@ -39,6 +44,7 @@ public class AppController implements Initializable {
     public TableView<Department> tableMain;
     @FXML
     public TableView<ObjectsByID> tableObjects;
+
     public int IDitemSelected;  //Id del Departamento seleccionado
 
     public String cadena = "cat"; /** Filtro de busqueda por defecto para acortar las busquedas */
@@ -49,6 +55,7 @@ public class AppController implements Initializable {
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
         prepareTableObjects();    //Inicializar tabla Objetos
         setTotalDeparments();     //Cargar los nombres de departamentos a tabla inicial.
+        progressIndicator.setVisible(true);
     }
 
 
@@ -62,7 +69,6 @@ public class AppController implements Initializable {
 
         tableMain.getColumns().add(idColumn);   //Datos a la columna
         tableMain.getColumns().add(nameColumn);
-
     }
     /** Tabla Titulos de Obras **/
     public void prepareTableObjects(){
@@ -73,7 +79,7 @@ public class AppController implements Initializable {
         tableObjects.getColumns().add(titleColumn); //Dato titulo
 
     }
-    /** Objetos totales en el Museo **/
+    /** Boton Objetos totales en el Museo **/
     @FXML
     public void loadTotalObjects (ActionEvent actionEvent){   //Boton pulsar para conocer número total de objetos
         setTotalNumberObjects();
@@ -85,34 +91,29 @@ public class AppController implements Initializable {
 
         if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir departamento
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
-
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
-            idDepartment.setText(String.valueOf(IDitemSelected));
             getTotalObjectsByDepartment();
-
-
         }
     }
     /** Buscar Total de Ids Objetos que corresponden al Departamento*/
     private void getTotalObjectsByDepartment() {
 
         idObjects.clear();
-        txtTotal.setText("Cargando...");
 
         Consumer<ObjectsMain> deparObjs = (info) ->{
-            txtTotal.setText(String.valueOf(info.getTotal()));
+            txtTotalDepart.setText(String.valueOf(info.getTotal()));
+            txtTotalDepart.setFill(Color.GREEN);
             idObjects.addAll(info.getObjectIDs()); //Añadimos a la lista los IDs de los objetos del departamento
-            getObjectstoTable(idObjects);          //Buscamos todos los Objetos de las anteriores IDs
-
+            getObjectstoTable(idObjects);
 
         };
-        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected,cadena,deparObjs);
+        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected,cadena,deparObjs,progressIndicator);
         new Thread(getIDsFromDepartmentTask).start();
-
     }
     /** Recuperar los datos individuales de cada objeto por su Id **/
     public void getObjectstoTable(List<Integer> idObjects){ //TODO Hacer 2 hilos. 1 coge id y luego mandar a llenar tabla
-        GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,tableObjects);
+
+        GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,tableObjects,progressIndicator);
         new Thread(getObjectsByIdsTask).start();
         tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
     }
@@ -128,11 +129,13 @@ public class AppController implements Initializable {
 
     }
     public void setTotalDeparments(){
-        MetService service = new MetService();
+
         Consumer<List<Department>> dep = (info) -> {
             tableMain.setItems(FXCollections.observableArrayList(info));
+            progressIndicator.setVisible(false);
         };
-        service.getAllDeparments().subscribe(dep); //TODO llevar a Thread
+        GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep,progressIndicator);
+        new Thread(getTotalDepartmentTask).start();
     }
 
 

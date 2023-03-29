@@ -4,6 +4,7 @@ import com.juansenen.PSPApiMuseum.controller.AppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -12,6 +13,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+
         //Cargamos el controlador de la pantalla incial de Splash
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/PSPApiMuseum.fxml"));

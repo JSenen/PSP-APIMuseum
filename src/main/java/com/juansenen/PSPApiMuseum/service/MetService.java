@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.juansenen.PSPApiMuseum.domain.*;
 import io.reactivex.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -50,5 +52,9 @@ public class MetService {
     public Observable<ObjectsMain> getObjectByIdforDepart(int idItem, String cadena){
         return this.metAPI.loadObjectsByDepartment(idItem,cadena).map(objectsMain -> objectsMain);
     }
+    /** Observable indicador de progreso **/
+
+
+
 
 }
