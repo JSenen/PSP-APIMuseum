@@ -71,8 +71,6 @@ public class AppController implements Initializable {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 
         tableObjects.getColumns().add(titleColumn); //Dato titulo
-        //idObjects = null; //Borramos registro
-
 
     }
     /** Objetos totales en el Museo **/
