@@ -114,23 +114,9 @@ public class AppController implements Initializable {
     }
     /** Recuperar los datos individuales de cada objeto por su Id **/
     public void getObjectstoTable(List<Integer> idObjects){ //TODO Hacer 2 hilos. 1 coge id y luego mandar a llenar tabla
-        MetService service = new MetService();
-        for (Integer ids: idObjects){       //Recorremos el List de Ids que pertenecen al Departamento
-            Consumer<ObjectsByID> obj = (info) -> {
-
-                titleObjectsFromDepartment.add(new ObjectsByID(info.getObjectID(), info.getAccessionNumber(),
-                                info.getAccessionYear(),info.isPublicDomain(), info.getPrimaryImage(),
-                                info.getTitle(),info.getCountry()));
-
-
-            };
-//            GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(ids,obj);
-//            new Thread(getObjectsByIdsTask);
-
-             service.getObjectById(ids).subscribe(obj);
-        }
+        GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,tableObjects);
+        new Thread(getObjectsByIdsTask).start();
         tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
-
     }
     public void setTotalNumberObjects(){
         txtTotal.setText("Cargando...");
