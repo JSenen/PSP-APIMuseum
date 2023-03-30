@@ -52,7 +52,6 @@ public class AppController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println(cadena); //TODO borrar tras pruebas
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
         prepareTableObjects();    //Inicializar tabla Objetos
         setTotalDeparments();     //Cargar los nombres de departamentos a tabla inicial.
