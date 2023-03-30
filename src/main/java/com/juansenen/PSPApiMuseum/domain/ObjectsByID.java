@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,6 +13,7 @@ public class ObjectsByID {
     private String accessionYear;
     private boolean isPublicDomain;
     private String primaryImage;
+    private String primaryImageSmall;
     private String title;
     private String culture;
     private String period;

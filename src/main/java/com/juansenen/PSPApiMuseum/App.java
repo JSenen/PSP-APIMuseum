@@ -14,7 +14,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        //Cargamos el controlador de la pantalla incial de Splash
+        //Cargamos el controlador de la pantalla inicial
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/PSPApiMuseum.fxml"));
         loader.setController(new AppController());
