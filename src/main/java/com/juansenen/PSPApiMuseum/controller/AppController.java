@@ -37,8 +37,6 @@ public class AppController implements Initializable {
     public TextField textFieldSearch; //Se usa para especificar en las busquedas de objetos
     @FXML
     public ProgressIndicator progressIndicator;
-    //public ObservableList<ObjectsMain> dataObjectMain = FXCollections.observableArrayList();
-
     @FXML
     public Text txtTotal,txtTotalDepart,messageDownload;
     public int partes;
@@ -53,7 +51,7 @@ public class AppController implements Initializable {
 
     public ObjectsByID objectsByID;
 
-    public int IDitemSelected,iDObjectSelected ;  //Id del Departamento seleccionado
+    public int IDitemSelected;
     public String cadena;
 
     @Override
@@ -81,7 +79,9 @@ public class AppController implements Initializable {
         TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("Titulo");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 
-        tableObjects.getColumns().add(titleColumn);
+
+        tableObjects.getColumns().addAll(titleColumn);
+
     }
     /** Boton Objetos totales en el Museo **/
     @FXML
@@ -104,7 +104,7 @@ public class AppController implements Initializable {
                 alert.setContentText("Debe introducir una palabra de filtrado");
                 alert.showAndWait();
             }
-
+            titleObjectsFromDepartment.clear();
             getTotalObjectsByDepartment();
         }
 
@@ -120,7 +120,7 @@ public class AppController implements Initializable {
 
 
     }
-
+    /** Lanzamos ventana independiente para mostrar detalles del objeto **/
     private void launchScreen(ObjectsByID objectsByID) {
         try {
 
@@ -151,6 +151,7 @@ public class AppController implements Initializable {
             txtTotalDepart.setFill(Color.GREEN);
             idObjects.addAll(info.getObjectIDs()); //Añadimos a la lista los IDs de los objetos del departamento
             getObjectstoTable(idObjects);
+            textFieldSearch.setText("");
 
         };
         GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected,cadena,deparObjs,
@@ -163,8 +164,6 @@ public class AppController implements Initializable {
         GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,
                 tableObjects,progressIndicator,messageDownload);
         new Thread(getObjectsByIdsTask).start();
-
-//        tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
 
     }
     public void setTotalNumberObjects(){
