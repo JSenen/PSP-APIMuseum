@@ -3,7 +3,6 @@ package com.juansenen.PSPApiMuseum.controller;
 import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
-import com.juansenen.PSPApiMuseum.service.MetService;
 import com.juansenen.PSPApiMuseum.task.GetIDsFromDepartmentTask;
 import com.juansenen.PSPApiMuseum.task.GetObjectsByIdsTask;
 import com.juansenen.PSPApiMuseum.task.GetTotalDepartmentTask;
@@ -13,13 +12,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,20 +45,23 @@ public class AppController implements Initializable {
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
     //Observable List para la table de Objetos por titulo
     @FXML
-    public ObservableList<ObjectsByID> titleObjectsFromDepartment = FXCollections.observableArrayList();
+    public ObservableList<ObjectsByID> titleObjectsFromDepartment;
     @FXML
-    public TableView<Department> tableMain;
+    public TableView<Department> tableMain = new TableView<>();
     @FXML
     public TableView<ObjectsByID> tableObjects;
 
-    public int IDitemSelected;  //Id del Departamento seleccionado
-    public String cadena = "sunflowers";
+    public ObjectsByID objectsByID;
+
+    public int IDitemSelected,iDObjectSelected ;  //Id del Departamento seleccionado
+    public String cadena;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
         prepareTableObjects();    //Inicializar tabla Objetos
         setTotalDeparments();     //Cargar los nombres de departamentos a tabla inicial.
+        titleObjectsFromDepartment = FXCollections.observableArrayList();
         progressIndicator.setVisible(true);
     }
 
@@ -66,15 +73,15 @@ public class AppController implements Initializable {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
 
         tableMain.getColumns().add(nameColumn);
+
     }
     /** Tabla Titulos de Obras **/
     public void prepareTableObjects(){
 
-        TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("TITLE");
+        TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("Titulo");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 
-        tableObjects.getColumns().add(titleColumn); //Dato titulo
-
+        tableObjects.getColumns().add(titleColumn);
     }
     /** Boton Objetos totales en el Museo **/
     @FXML
@@ -84,16 +91,56 @@ public class AppController implements Initializable {
     }
     /**Acción seleccionar un Departamento en la tabla Departamentos **/
     @FXML
-    public void tableMouseClickItem(MouseEvent event) {
+    public void tableDepartmentClickItem(MouseEvent event) {
 
         if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir departamento
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
             cadena = textFieldSearch.getText();
-            System.out.printf(cadena);//TODO BORRAR TRAS PRUEBAS;
+            if (cadena == null || textFieldSearch.getText().isEmpty()){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Información");
+                alert.setHeaderText("Mensaje de información");
+                alert.setContentText("Debe introducir una palabra de filtrado");
+                alert.showAndWait();
+            }
+
             getTotalObjectsByDepartment();
         }
+
     }
+    @FXML
+    public void tableObjectClickItem(MouseEvent event) throws IOException {
+        objectsByID = new ObjectsByID();
+        if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir objeto
+            objectsByID = tableObjects.getSelectionModel().getSelectedItem();
+
+            launchScreen(objectsByID);
+        }
+
+
+    }
+
+    private void launchScreen(ObjectsByID objectsByID) {
+        try {
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/ObjectScreen.fxml"));
+
+            ObjectScreenController objectScreenController = new ObjectScreenController(this.objectsByID);
+            loader.setController(objectScreenController);
+            AnchorPane anchorPane = loader.load();
+            Scene scene = new Scene(anchorPane);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("Museum");
+            stage.show();
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
     /** Buscar Total de Ids Objetos que corresponden al Departamento*/
     private void getTotalObjectsByDepartment() {
 
@@ -111,12 +158,14 @@ public class AppController implements Initializable {
         new Thread(getIDsFromDepartmentTask).start();
     }
     /** Recuperar los datos individuales de cada objeto por su Id **/
-    public void getObjectstoTable(List<Integer> idObjects){ //TODO Hacer 2 hilos. 1 coge id y luego mandar a llenar tabla
+    public void getObjectstoTable(List<Integer> idObjects){
 
         GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,
                 tableObjects,progressIndicator,messageDownload);
         new Thread(getObjectsByIdsTask).start();
-        tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
+
+//        tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
+
     }
     public void setTotalNumberObjects(){
         txtTotal.setText("Cargando...");
@@ -138,10 +187,10 @@ public class AppController implements Initializable {
         GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep,progressIndicator);
         new Thread(getTotalDepartmentTask).start();
     }
+    private void openObjectScreen(int iDObjectSelected)  {
 
 
-
-
+    }
 
 
 }

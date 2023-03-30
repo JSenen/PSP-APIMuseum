@@ -45,7 +45,7 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
 
             Consumer<ObjectsByID> obj = (info) -> {
 
-                titleObjectsFromDepartment.add(new ObjectsByID(info.getObjectID(), info.getAccessionNumber(),
+                titleObjectsFromDepartment.addAll(new ObjectsByID(info.getObjectID(), info.getAccessionNumber(),
                         info.getAccessionYear(),info.isPublicDomain(), info.getPrimaryImage(),
                         info.getTitle(),info.getCountry(), info.getCulture(),info.getPeriod(), info.getArtistDisplayName(),
                         info.getArtistDisplayBio(), info.getArtistNationality(), info.getObjectDate(), info.getMedium(),
