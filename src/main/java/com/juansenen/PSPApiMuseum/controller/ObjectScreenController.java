@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import javax.imageio.ImageIO;
@@ -40,13 +41,15 @@ public class ObjectScreenController implements Initializable {
         this.objectsByID = objectsByID;
 
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initData(objectsByID);
-        progressionImg.setVisible(true);
+
 
     }
-    public void initData(ObjectsByID selectedObject){
+
+    public void initData(ObjectsByID selectedObject) {
         //Rellenamos campos de texto
         txtTitle.setText(objectsByID.getTitle());
         txtAuthorName.setText(objectsByID.getArtistDisplayName());
@@ -66,9 +69,17 @@ public class ObjectScreenController implements Initializable {
         //Descargamos la imagen de la Url proporcionada por la Api
         try {
             URL url = new URL(objectsByID.getPrimaryImageSmall());
+            if (url == null || url.equals("")) {
+                txtProgressionImg.setText("SIN IMAGEN");
+            } else {
+                txtProgressionImg.setText("Cargando imagen..");
+                txtProgressionImg.setFill(Color.BLUE);
+                progressionImg.setVisible(true);
+            }
             //Creamos un Thread
-            GetImagenTask getImagenTask = new GetImagenTask(url,progressionImg,txtProgressionImg);
+            GetImagenTask getImagenTask = new GetImagenTask(url, progressionImg, txtProgressionImg);
             new Thread(getImagenTask).start();
+
             showImageFromUrl(url.toString());
 
         } catch (Exception e) {
@@ -79,7 +90,6 @@ public class ObjectScreenController implements Initializable {
 
     public void showImageFromUrl(String urlString) {
 
-        progressionImg.setVisible(false);
         // Crear una instancia de ImageView y agregarla al contenedor
         ImageView imageView = new ImageView();
 

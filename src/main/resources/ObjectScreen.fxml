@@ -89,7 +89,7 @@
       <Pane fx:id="paneImage" layoutX="383.0" layoutY="151.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="275.0" prefWidth="311.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="383.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="151.0">
          <children>
             <ProgressIndicator fx:id="progressionImg" layoutX="134.0" layoutY="102.0" prefHeight="68.0" prefWidth="60.0" />
-            <Text fx:id="txtProgressionImg" layoutX="143.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+            <Text fx:id="txtProgressionImg" layoutX="143.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" />
          </children>
       </Pane>
       <Line endX="646.5" endY="1.0" layoutX="47.0" layoutY="59.0" startX="-27.207107543945312" startY="1.0" />

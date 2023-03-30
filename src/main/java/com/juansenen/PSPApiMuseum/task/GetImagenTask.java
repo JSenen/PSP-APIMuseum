@@ -2,6 +2,7 @@ package com.juansenen.PSPApiMuseum.task;
 
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.InputStream;
@@ -24,13 +25,14 @@ public class GetImagenTask extends Task<String> {
 
         //Descargamos la imagen de la Url proporcionada por la Api
         try {
-            txtProgressionImg.setText("Cargando imagen..");
             URLConnection conn = url.openConnection();
             InputStream in = conn.getInputStream();
             in.close();
         } catch (Exception e) {
             System.out.println("Error al descargar la URL: " + e.getMessage());
         }
+        txtProgressionImg.setText("");
+        progressIndicator.setVisible(false);
         return null;
     }
 }
