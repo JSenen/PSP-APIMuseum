@@ -44,10 +44,14 @@ public class AppController implements Initializable {
     //Observable List para la table de Objetos por titulo
     @FXML
     public ObservableList<ObjectsByID> titleObjectsFromDepartment;
+
     @FXML
     public TableView<Department> tableMain = new TableView<>();
     @FXML
     public TableView<ObjectsByID> tableObjects;
+    @FXML
+    public TextArea tAreaObejtosList;
+    List<String> listObjectToTextArea;
 
     public ObjectsByID objectsByID;
 
@@ -109,13 +113,21 @@ public class AppController implements Initializable {
         }
 
     }
+    /** Accion seleccionar un objeto de la tabla de objetos **/
     @FXML
     public void tableObjectClickItem(MouseEvent event) throws IOException {
         objectsByID = new ObjectsByID();
+        listObjectToTextArea = new ArrayList<>();
+
         if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir objeto
             objectsByID = tableObjects.getSelectionModel().getSelectedItem();
+            listObjectToTextArea.add(objectsByID.getTitle()+" "+objectsByID.getArtistDisplayName());
 
-            launchScreen(objectsByID);
+           String previousObject = tAreaObejtosList.getText()+"\n"; //Recogemos texto anterior en el TextArea
+            tAreaObejtosList.setText(previousObject+" "+objectsByID.getTitle()+"   Autor: "+objectsByID.getArtistDisplayName()+
+                    "  Fecha: "+objectsByID.getObjectDate()); //Añadimos el texto anterior y el actual
+
+            launchScreen(objectsByID); //Abrimos segunda ventana
         }
 
 

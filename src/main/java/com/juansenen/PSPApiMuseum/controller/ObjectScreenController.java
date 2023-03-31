@@ -77,7 +77,7 @@ public class ObjectScreenController implements Initializable {
                 txtProgressionImg.setFill(Color.BLUE);
                 progressionImg.setVisible(true);
             }
-            //Creamos un Thread
+            //Creamos un Thread para su carga
             GetImagenTask getImagenTask = new GetImagenTask(url, progressionImg, txtProgressionImg);
             new Thread(getImagenTask).start();
 
@@ -91,7 +91,7 @@ public class ObjectScreenController implements Initializable {
 
     public void showImageFromUrl(String urlString) {
 
-        // Crear una instancia de ImageView y agregarla al contenedor
+        // Creamos una instancia de ImageView y la agregamos al contenedor
         ImageView imageView = new ImageView();
 
         //Ajustamos imagen al Panel
@@ -101,7 +101,7 @@ public class ObjectScreenController implements Initializable {
 
         paneImage.getChildren().add(imageView);
 
-        // Cargar la imagen desde la URL y establecerla en la instancia de ImageView
+        // Cargar la imagen desde la URL y la establecemos en la instancia de ImageView
         Image image = new Image(urlString);
         imageView.setImage(image);
     }
