@@ -293,10 +293,11 @@ public class AppController implements Initializable {
     /** Este código crea un objeto ZipOutputStream que se usa para crear el archivo ZIP
      * y agregar el archivo CSV al archivo ZIP.
      * El proceso de compresión se ejecuta en segundo plano utilizando un CompletableFuture.
-     * Cuando la compresión se completa con éxito, se muestra un mensaje en la consola.
+     * Cuando la compresión se completa con éxito, se muestra un mensaje.
      * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..*/
     @FXML
     public void zipFileCSV(ActionEvent event){
+        crearCSV(); //Creamos el archivo CSV
 
         CompletableFuture.runAsync(() -> {
             try {
@@ -305,7 +306,7 @@ public class AppController implements Initializable {
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
 
                 // Agregar un archivo CSV al archivo ZIP
-                File fileToZip = new File("datosMet.csv");
+                File fileToZip = new File("datosCSV.csv");
                 FileInputStream fis = new FileInputStream(fileToZip);
                 ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
                 zipOut.putNextEntry(zipEntry);
@@ -322,14 +323,11 @@ public class AppController implements Initializable {
                 zipOut.close();
 
                 // Mostrar mensaje de éxito
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText("ZIP");
-                alert.setContentText("Archivo ZIP Creado");
-                alert.initStyle(StageStyle.UTILITY); //Sin botones de cierre
-                //Damos 3 segundos para que el usuario vea el mensaje mergente
-                GenericTask genericTask = new GenericTask(alert);
-                new Thread(genericTask).start();
-                alert.showAndWait();
+                Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                alerta.setHeaderText("ZIP");
+                alerta.setContentText("Archivo ZIP Creado");
+                alerta.initStyle(StageStyle.UTILITY);
+
 
             } catch (IOException e) {
                 // Manejar la excepción
