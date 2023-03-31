@@ -8,7 +8,6 @@ import com.opencsv.CSVWriter;
 import io.reactivex.functions.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,24 +15,21 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import javax.swing.plaf.TableHeaderUI;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class AppController implements Initializable {
 
@@ -265,7 +261,11 @@ public class AppController implements Initializable {
     /** Botón crear archivo CSV **/
     @FXML
     public void madeCSV(ActionEvent event) {
-        File file = new File("datosMet.csv");
+        crearCSV();
+    }
+    /** Metodo crear CSV */
+    private void crearCSV(){
+        File file = new File("datosCSV.csv");
         try (FileWriter writer = new FileWriter(file);
              CSVWriter csvWriter = new CSVWriter(writer, ',', CSVWriter.DEFAULT_QUOTE_CHARACTER,
                      CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
@@ -286,12 +286,58 @@ public class AppController implements Initializable {
         } catch (IOException e) {
             txtCSVMade.setText("Error  CSV: " + e.getMessage());
         }
+
     }
 
-    /** Boton comprimir CSV a un ZIP */
+
+    /** Este código crea un objeto ZipOutputStream que se usa para crear el archivo ZIP
+     * y agregar el archivo CSV al archivo ZIP.
+     * El proceso de compresión se ejecuta en segundo plano utilizando un CompletableFuture.
+     * Cuando la compresión se completa con éxito, se muestra un mensaje.
+     * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..*/
     @FXML
     public void zipFileCSV(ActionEvent event){
+        crearCSV(); //Creamos el archivo CSV
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                // Crear un archivo de salida ZIP
+                FileOutputStream fos = new FileOutputStream("datosZIP.zip");
+                ZipOutputStream zipOut = new ZipOutputStream(fos);
+
+                // Agregar un archivo CSV al archivo ZIP
+                File fileToZip = new File("datosCSV.csv");
+                FileInputStream fis = new FileInputStream(fileToZip);
+                ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                zipOut.putNextEntry(zipEntry);
+
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = fis.read(bytes)) >= 0) {
+                    zipOut.write(bytes, 0, length);
+                }
+
+                // Cerrar los streams
+                zipOut.closeEntry();
+                fis.close();
+                zipOut.close();
+
+                // Mostrar mensaje de éxito
+                Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                alerta.setHeaderText("ZIP");
+                alerta.setContentText("Archivo ZIP Creado");
+                alerta.initStyle(StageStyle.UTILITY);
+
+
+            } catch (IOException e) {
+                // Manejar la excepción
+                e.printStackTrace();
+            }
+        });
+
 
     }
+
+
 
 }
