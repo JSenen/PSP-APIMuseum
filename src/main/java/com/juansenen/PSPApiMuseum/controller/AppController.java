@@ -39,6 +39,8 @@ public class AppController implements Initializable {
     @FXML
     public Button btDelete;
     @FXML
+    public Button butCSV;
+    @FXML
     public TextField textFieldSearch; //Se usa para especificar en las busquedas de objetos
     @FXML
     public TextField txtFieldDelete; //Se usa para seleccionar un elemento del Text Area

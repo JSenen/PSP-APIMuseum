@@ -16,14 +16,14 @@
             <Font name="System Bold" size="18.0" />
          </font></Text>
       <Label layoutX="16.0" layoutY="498.0" text="Número de identificación:" />
-      <Label layoutX="498.0" layoutY="42.0" text="Año de adquisición:" />
+      <Label layoutX="552.0" layoutY="42.0" text="Año de adquisición:" />
       <Label layoutX="34.0" layoutY="273.0" text="Cultura" />
       <Label layoutX="33.0" layoutY="167.0" text="Periodo" />
       <Label layoutX="33.0" layoutY="222.0" text="País:" />
       <Label layoutX="35.0" layoutY="70.0" text="Nombre del Autor:" />
       <Label layoutX="35.0" layoutY="104.0" text="Biografía:" />
       <Label layoutX="33.0" layoutY="245.0" text="Nacionalidad:" />
-      <Label layoutX="553.0" layoutY="19.0" text="Fecha :" />
+      <Label layoutX="616.0" layoutY="19.0" text="Fecha :" />
       <Label layoutX="35.0" layoutY="305.0" text="Medio:" />
       <Label layoutX="33.0" layoutY="134.0" text="Dimensiones:" />
       <Text fx:id="txtAuthorName" layoutX="137.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="293.21630859375">
@@ -61,12 +61,12 @@
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtDate" layoutX="605.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="177.5">
+      <Text fx:id="txtDate" layoutX="664.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="120.49999999999989">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fx:id="txtAccesionYear" layoutX="605.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="177.5">
+      <Text fx:id="txtAccesionYear" layoutX="664.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="106.49999999999989">
          <font>
             <Font size="14.0" />
          </font>
