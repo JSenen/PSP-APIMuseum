@@ -2,6 +2,7 @@ package com.juansenen.PSPApiMuseum;
 
 import com.juansenen.PSPApiMuseum.controller.AppController;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
@@ -9,7 +10,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class App extends Application {
-
 
     @Override
     public void start(Stage stage) throws Exception {

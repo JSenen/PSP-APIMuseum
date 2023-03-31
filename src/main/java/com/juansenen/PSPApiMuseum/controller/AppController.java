@@ -17,8 +17,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -34,20 +37,31 @@ public class AppController implements Initializable {
     @FXML
     public Button buttonLoad;
     @FXML
+    public Button btDelete;
+    @FXML
     public TextField textFieldSearch; //Se usa para especificar en las busquedas de objetos
+    @FXML
+    public TextField txtFieldDelete; //Se usa para seleccionar un elemento del Text Area
     @FXML
     public ProgressIndicator progressIndicator;
     @FXML
     public Text txtTotal,txtTotalDepart,messageDownload;
-    public int partes;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
     //Observable List para la table de Objetos por titulo
     @FXML
     public ObservableList<ObjectsByID> titleObjectsFromDepartment;
+
     @FXML
     public TableView<Department> tableMain = new TableView<>();
     @FXML
     public TableView<ObjectsByID> tableObjects;
+    @FXML
+    public TextArea tAreaObejtosList;
+    @FXML
+    public ImageView imgLogo;
+
+    List<String> listObjectToTextArea;
+    public String path = System.getProperty("user.dir"); //Variable ruta del usuario
 
     public ObjectsByID objectsByID;
 
@@ -56,10 +70,13 @@ public class AppController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         prepareTableDepartment(); //Inicializa la Tabla Departamentos
         prepareTableObjects();    //Inicializar tabla Objetos
         setTotalDeparments();     //Cargar los nombres de departamentos a tabla inicial.
+
         titleObjectsFromDepartment = FXCollections.observableArrayList();
+        listObjectToTextArea = new ArrayList<>();
         progressIndicator.setVisible(true);
     }
 
@@ -67,7 +84,7 @@ public class AppController implements Initializable {
     /** Tabla Departamentos **/
     public void prepareTableDepartment(){
 
-        TableColumn<Department, String> nameColumn = new TableColumn<>("Nombre");
+        TableColumn<Department, String> nameColumn = new TableColumn<>("Departamento");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
 
         tableMain.getColumns().add(nameColumn);
@@ -105,17 +122,28 @@ public class AppController implements Initializable {
                 alert.showAndWait();
             }
             titleObjectsFromDepartment.clear();
+            textFieldSearch.setText("");
             getTotalObjectsByDepartment();
         }
 
     }
+
+    /** Accion seleccionar un objeto de la tabla de objetos
+     * añade tambien el objeto al listado de consultados **/
     @FXML
     public void tableObjectClickItem(MouseEvent event) throws IOException {
         objectsByID = new ObjectsByID();
+
         if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir objeto
             objectsByID = tableObjects.getSelectionModel().getSelectedItem();
+            listObjectToTextArea.add("---> "+objectsByID.getTitle()+" "+objectsByID.getArtistDisplayName());
+            String previousList = tAreaObejtosList.getText(); //Recogemos texto anterior en el TextArea
+            System.out.println("LISTA QUE RECOGE -----------> "+ listObjectToTextArea);
 
-            launchScreen(objectsByID);
+            tAreaObejtosList.setText(previousList+"---> "+objectsByID.getTitle()+"   Autor: "+objectsByID.getArtistDisplayName()+
+                    "  Fecha: "+objectsByID.getObjectDate()+"\n"); //Añadimos el texto anterior y el actual
+
+            launchScreen(objectsByID); //Abrimos segunda ventana
         }
 
 
@@ -186,10 +214,18 @@ public class AppController implements Initializable {
         GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep,progressIndicator);
         new Thread(getTotalDepartmentTask).start();
     }
-    private void openObjectScreen(int iDObjectSelected)  {
+   @FXML
+    public void delObject (ActionEvent event){ //TODO Borrar solo el objeto seleccionado
+       int indexObject = Integer.parseInt(txtFieldDelete.getText());
+       listObjectToTextArea.remove(indexObject);
 
+       //Rellenamos la lista de nuevo
+       tAreaObejtosList.clear();
+       for (String objectI : listObjectToTextArea) {
+           tAreaObejtosList.setText(tAreaObejtosList.getText() + objectI+"\n");
+       }
 
-    }
+   }
 
 
 }
