@@ -4,9 +4,11 @@ import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.task.*;
+import com.opencsv.CSVWriter;
 import io.reactivex.functions.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +24,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import javax.swing.plaf.TableHeaderUI;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,13 +44,15 @@ public class AppController implements Initializable {
     @FXML
     public Button butCSV;
     @FXML
+    public Button butZIP;
+    @FXML
     public TextField textFieldSearch; //Se usa para especificar en las busquedas de objetos
     @FXML
     public TextField txtFieldDelete; //Se usa para seleccionar un elemento del Text Area
     @FXML
     public ProgressIndicator progressIndicator;
     @FXML
-    public Text txtTotal,txtTotalDepart,messageDownload;
+    public Text txtTotal, txtTotalDepart, messageDownload, txtCSVMade;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
     //Observable List para la table de Objetos por titulo
     @FXML
@@ -80,8 +88,10 @@ public class AppController implements Initializable {
     }
 
 
-    /** Tabla Departamentos **/
-    public void prepareTableDepartment(){
+    /**
+     * Tabla Departamentos
+     **/
+    public void prepareTableDepartment() {
 
         TableColumn<Department, String> nameColumn = new TableColumn<>("Departamento");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
@@ -89,8 +99,11 @@ public class AppController implements Initializable {
         tableMain.getColumns().add(nameColumn);
 
     }
-    /** Tabla Titulos de Obras **/
-    public void prepareTableObjects(){
+
+    /**
+     * Tabla Titulos de Obras
+     **/
+    public void prepareTableObjects() {
 
         TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("Titulo");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -99,13 +112,19 @@ public class AppController implements Initializable {
         tableObjects.getColumns().addAll(titleColumn);
 
     }
-    /** Boton Objetos totales en el Museo **/
+
+    /**
+     * Boton Objetos totales en el Museo
+     **/
     @FXML
-    public void loadTotalObjects (ActionEvent actionEvent){   //Boton pulsar para conocer número total de objetos
+    public void loadTotalObjects(ActionEvent actionEvent) {   //Boton pulsar para conocer número total de objetos
         setTotalNumberObjects();
 
     }
-    /**Acción seleccionar un Departamento en la tabla Departamentos **/
+
+    /**
+     * Acción seleccionar un Departamento en la tabla Departamentos
+     **/
     @FXML
     public void tableDepartmentClickItem(MouseEvent event) {
 
@@ -113,7 +132,7 @@ public class AppController implements Initializable {
             Department selectedDepartment = tableMain.getSelectionModel().getSelectedItem();
             IDitemSelected = selectedDepartment.getDepartmentId();  //Obtenemos Id del Departamento
             cadena = textFieldSearch.getText();
-            if (cadena == null || textFieldSearch.getText().isEmpty()){
+            if (cadena == null || textFieldSearch.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Información");
                 alert.setHeaderText("Mensaje de información");
@@ -127,8 +146,10 @@ public class AppController implements Initializable {
 
     }
 
-    /** Accion seleccionar un objeto de la tabla de objetos
-     * añade tambien el objeto al listado de consultados **/
+    /**
+     * Accion seleccionar un objeto de la tabla de objetos
+     * añade tambien el objeto al listado de consultados
+     **/
     @FXML
     public void tableObjectClickItem(MouseEvent event) throws IOException {
         objectsByID = new ObjectsByID();
@@ -138,8 +159,8 @@ public class AppController implements Initializable {
             objectsByID = tableObjects.getSelectionModel().getSelectedItem();
 
             //Añadimos el elemento a la lista
-            listObjectToTextArea.add("---> TITULO: "+objectsByID.getTitle()+" --ARTISTA: "+objectsByID.getArtistDisplayName()+
-                    " --FECHA: "+objectsByID.getObjectDate()+" --PAIS: "+objectsByID.getCountry());
+            listObjectToTextArea.add("---> TITULO: " + objectsByID.getTitle() + " --ARTISTA: " + objectsByID.getArtistDisplayName() +
+                    " --FECHA: " + objectsByID.getObjectDate() + " --PAIS: " + objectsByID.getCountry());
             //Hilo para confeccionar el listado del TextArea
             ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea, tAreaObejtosList);
             new Thread(listObjectsTask).start();
@@ -151,7 +172,10 @@ public class AppController implements Initializable {
 
 
     }
-    /** Lanzamos ventana independiente para mostrar detalles del objeto **/
+
+    /**
+     * Lanzamos ventana independiente para mostrar detalles del objeto
+     **/
     private void launchScreen(ObjectsByID objectsByID) {
         try {
 
@@ -173,31 +197,37 @@ public class AppController implements Initializable {
         }
     }
 
-    /** Buscar Total de Ids Objetos que corresponden al Departamento*/
+    /**
+     * Buscar Total de Ids Objetos que corresponden al Departamento
+     */
     private void getTotalObjectsByDepartment() {
 
         idObjects.clear();
 
-        Consumer<ObjectsMain> deparObjs = (info) ->{
+        Consumer<ObjectsMain> deparObjs = (info) -> {
             txtTotalDepart.setText(String.valueOf(info.getTotal()));
             txtTotalDepart.setFill(Color.GREEN);
             idObjects.addAll(info.getObjectIDs()); //Añadimos a la lista los IDs de los objetos del departamento
             getObjectstoTable(idObjects);
             textFieldSearch.setText("");
         };
-        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected,cadena,deparObjs,
+        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected, cadena, deparObjs,
                 progressIndicator);
         new Thread(getIDsFromDepartmentTask).start();
     }
-    /** Recuperar los datos individuales de cada objeto por su Id **/
-    public void getObjectstoTable(List<Integer> idObjects){
 
-        GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects,titleObjectsFromDepartment,
-                tableObjects,progressIndicator,messageDownload);
+    /**
+     * Recuperar los datos individuales de cada objeto por su Id
+     **/
+    public void getObjectstoTable(List<Integer> idObjects) {
+
+        GetObjectsByIdsTask getObjectsByIdsTask = new GetObjectsByIdsTask(idObjects, titleObjectsFromDepartment,
+                tableObjects, progressIndicator, messageDownload);
         new Thread(getObjectsByIdsTask).start();
 
     }
-    public void setTotalNumberObjects(){
+
+    public void setTotalNumberObjects() {
         txtTotal.setText("Cargando...");
         Consumer<ObjectsMain> totalObj = (info) -> {            //Creamos el consumidor
             txtTotal.setText(String.valueOf(info.getTotal()));
@@ -208,25 +238,60 @@ public class AppController implements Initializable {
         new Thread(totalObjectTask).start();                             // Ejecutamos hilo
 
     }
-    public void setTotalDeparments(){
+
+    public void setTotalDeparments() {
 
         Consumer<List<Department>> dep = (info) -> {
             tableMain.setItems(FXCollections.observableArrayList(info));
             progressIndicator.setVisible(false);
         };
-        GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep,progressIndicator);
+        GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep, progressIndicator);
         new Thread(getTotalDepartmentTask).start();
     }
-    /** Borrar un elemento de la lista de objetos vistos **/
-   @FXML
-    public void delObject (ActionEvent event){
-       int indexObject = Integer.parseInt(txtFieldDelete.getText());
-       //Eliminamos el objeto seleccionado
-       listObjectToTextArea.remove(indexObject);
 
-       ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea,tAreaObejtosList);
-       new Thread(listObjectsTask).start();
+    /**
+     * Borrar un elemento de la lista de objetos vistos
+     **/
+    @FXML
+    public void delObject(ActionEvent event) {
+        int indexObject = Integer.parseInt(txtFieldDelete.getText());
+        //Eliminamos el objeto seleccionado
+        listObjectToTextArea.remove(indexObject);
 
-   }
+        ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea, tAreaObejtosList);
+        new Thread(listObjectsTask).start();
+
+    }
+    /** Botón crear archivo CSV **/
+    @FXML
+    public void madeCSV(ActionEvent event) {
+        File file = new File("datosMet.csv");
+        try (FileWriter writer = new FileWriter(file);
+             CSVWriter csvWriter = new CSVWriter(writer, ',', CSVWriter.DEFAULT_QUOTE_CHARACTER,
+                     CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
+
+            // Escribir los elementos de la lista en el archivo CSV
+            for (String elemento : listObjectToTextArea) {
+                csvWriter.writeNext(new String[] { elemento });
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("CSV");
+            alert.setContentText("Archivo CSV Creado");
+            alert.initStyle(StageStyle.UTILITY); //Sin botones de cierre
+            //Damos 3 segundos para que el usuario vea el mensaje mergente
+            GenericTask genericTask = new GenericTask(alert);
+            new Thread(genericTask).start();
+            alert.showAndWait();
+
+        } catch (IOException e) {
+            txtCSVMade.setText("Error  CSV: " + e.getMessage());
+        }
+    }
+
+    /** Boton comprimir CSV a un ZIP */
+    @FXML
+    public void zipFileCSV(ActionEvent event){
+
+    }
 
 }

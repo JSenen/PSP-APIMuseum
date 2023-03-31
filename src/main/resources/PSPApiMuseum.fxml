@@ -54,11 +54,17 @@
          <image>
             <Image url="@img/logoMET.jpeg" />
          </image></ImageView>
-      <Button fx:id="butCSV" layoutX="432.0" layoutY="611.0" mnemonicParsing="false" style="-fx-background-color: green;" text="CSV" textFill="WHITE" />
+      <Button fx:id="butCSV" layoutX="432.0" layoutY="611.0" mnemonicParsing="false" onAction="#madeCSV" style="-fx-background-color: green;" text="CSV" textFill="WHITE" />
       <Text fill="#b90f0f" layoutX="350.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Metropolitan Museum  of Art" textAlignment="CENTER" wrappingWidth="466.658203125">
          <font>
             <Font size="36.0" />
          </font>
       </Text>
+      <Text fx:id="txtCSVMade" fill="#20ae44" layoutX="559.0" layoutY="631.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="380.21630859375">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Button fx:id="butZIP" layoutX="480.0" layoutY="611.0" mnemonicParsing="false" onAction="#zipFileCSV" style="-fx-background-color: violet;" text="ZIP" />
    </children>
 </AnchorPane>
