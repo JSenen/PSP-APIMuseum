@@ -69,8 +69,9 @@ public class ObjectScreenController implements Initializable {
         //Descargamos la imagen de la Url proporcionada por la Api
         try {
             URL url = new URL(objectsByID.getPrimaryImageSmall());
-            if (url == null || url.equals("")) {
+            if (url.getPath().toString().isEmpty() || url.getPath().isBlank() || url.getPath().equals("")) {
                 txtProgressionImg.setText("SIN IMAGEN");
+                progressionImg.setVisible(false);
             } else {
                 txtProgressionImg.setText("Cargando imagen..");
                 txtProgressionImg.setFill(Color.BLUE);
