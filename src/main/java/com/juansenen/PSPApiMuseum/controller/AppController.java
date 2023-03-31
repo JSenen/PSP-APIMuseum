@@ -3,10 +3,7 @@ package com.juansenen.PSPApiMuseum.controller;
 import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
-import com.juansenen.PSPApiMuseum.task.GetIDsFromDepartmentTask;
-import com.juansenen.PSPApiMuseum.task.GetObjectsByIdsTask;
-import com.juansenen.PSPApiMuseum.task.GetTotalDepartmentTask;
-import com.juansenen.PSPApiMuseum.task.TotalObjectTask;
+import com.juansenen.PSPApiMuseum.task.*;
 import io.reactivex.functions.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -137,15 +134,19 @@ public class AppController implements Initializable {
         objectsByID = new ObjectsByID();
 
         if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir objeto
+            //Recuperamos elemento
             objectsByID = tableObjects.getSelectionModel().getSelectedItem();
-            listObjectToTextArea.add("---> "+objectsByID.getTitle()+" "+objectsByID.getArtistDisplayName());
-            String previousList = tAreaObejtosList.getText(); //Recogemos texto anterior en el TextArea
-            System.out.println("LISTA QUE RECOGE -----------> "+ listObjectToTextArea);
 
-            tAreaObejtosList.setText(previousList+"---> "+objectsByID.getTitle()+"   Autor: "+objectsByID.getArtistDisplayName()+
-                    "  Fecha: "+objectsByID.getObjectDate()+"\n"); //Añadimos el texto anterior y el actual
+            //Añadimos el elemento a la lista
+            listObjectToTextArea.add("---> TITULO: "+objectsByID.getTitle()+" --ARTISTA: "+objectsByID.getArtistDisplayName()+
+                    " --FECHA: "+objectsByID.getObjectDate()+" --PAIS: "+objectsByID.getCountry());
+            //Hilo para confeccionar el listado del TextArea
+            ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea, tAreaObejtosList);
+            new Thread(listObjectsTask).start();
 
-            launchScreen(objectsByID); //Abrimos segunda ventana
+            //Abrimos segunda ventana
+            launchScreen(objectsByID);
+
         }
 
 
@@ -164,6 +165,7 @@ public class AppController implements Initializable {
             Stage stage = new Stage();
             stage.setScene(scene);
             stage.setTitle("Museum");
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException ioe) {
@@ -182,7 +184,6 @@ public class AppController implements Initializable {
             idObjects.addAll(info.getObjectIDs()); //Añadimos a la lista los IDs de los objetos del departamento
             getObjectstoTable(idObjects);
             textFieldSearch.setText("");
-
         };
         GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected,cadena,deparObjs,
                 progressIndicator);
@@ -216,18 +217,16 @@ public class AppController implements Initializable {
         GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep,progressIndicator);
         new Thread(getTotalDepartmentTask).start();
     }
+    /** Borrar un elemento de la lista de objetos vistos **/
    @FXML
-    public void delObject (ActionEvent event){ //TODO Borrar solo el objeto seleccionado
+    public void delObject (ActionEvent event){
        int indexObject = Integer.parseInt(txtFieldDelete.getText());
+       //Eliminamos el objeto seleccionado
        listObjectToTextArea.remove(indexObject);
 
-       //Rellenamos la lista de nuevo
-       tAreaObejtosList.clear();
-       for (String objectI : listObjectToTextArea) {
-           tAreaObejtosList.setText(tAreaObejtosList.getText() + objectI+"\n");
-       }
+       ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea,tAreaObejtosList);
+       new Thread(listObjectsTask).start();
 
    }
-
 
 }
