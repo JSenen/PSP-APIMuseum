@@ -24,6 +24,7 @@ public class App extends Application {
         Scene scene = new Scene(anchorPane);
         stage.setScene(scene);
         stage.setTitle("Museum");
+        stage.setResizable(false);
         stage.show();
     }
     public static void main(String[] args) {launch();
