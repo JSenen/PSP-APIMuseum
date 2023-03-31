@@ -11,8 +11,6 @@ public class ObjectsByDepartmentTask extends Task<ObjectsMain> {
     public MetService api;
     public int idDeparment;
     public String cadena;
-    public boolean isOnView,hasImages,isHighlight; //TODO filtros
-
     public Consumer<ObjectsMain> user;
     public List<ObjectsMain> objectsMainList;
 

@@ -34,7 +34,11 @@ public class AppController implements Initializable {
     @FXML
     public Button buttonLoad;
     @FXML
+    public Button btDelete;
+    @FXML
     public TextField textFieldSearch; //Se usa para especificar en las busquedas de objetos
+    @FXML
+    public TextField txtFieldDelete; //Se usa para seleccionar un elemento del Text Area
     @FXML
     public ProgressIndicator progressIndicator;
     @FXML
@@ -57,6 +61,7 @@ public class AppController implements Initializable {
 
     public int IDitemSelected;
     public String cadena;
+    public int contador;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -113,7 +118,9 @@ public class AppController implements Initializable {
         }
 
     }
-    /** Accion seleccionar un objeto de la tabla de objetos **/
+
+    /** Accion seleccionar un objeto de la tabla de objetos
+     * añade tambien el objeto al listado de consultados **/
     @FXML
     public void tableObjectClickItem(MouseEvent event) throws IOException {
         objectsByID = new ObjectsByID();
@@ -198,10 +205,17 @@ public class AppController implements Initializable {
         GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep,progressIndicator);
         new Thread(getTotalDepartmentTask).start();
     }
-    private void openObjectScreen(int iDObjectSelected)  {
+   @FXML
+    public void delObject (ActionEvent event){ //TODO Borrar solo el objeto seleccionado
+       int indexObject = Integer.parseInt(txtFieldDelete.getText());
+       listObjectToTextArea.remove(indexObject);
 
+       //this.tAreaObejtosList.setText("");
+       for (String objectI : listObjectToTextArea) {
+           tAreaObejtosList.setText(tAreaObejtosList.getText() + "\n" + objectI);
+       }
 
-    }
+   }
 
 
 }
