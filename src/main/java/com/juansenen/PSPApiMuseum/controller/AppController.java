@@ -48,7 +48,7 @@ public class AppController implements Initializable {
     @FXML
     public ProgressIndicator progressIndicator;
     @FXML
-    public Text txtTotal, txtTotalDepart, messageDownload, txtCSVMade;
+    public Text txtTotal, txtTotalDepart, messageDownload, txtZIPMade;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
     //Observable List para la table de Objetos por titulo
     @FXML
@@ -284,7 +284,7 @@ public class AppController implements Initializable {
             alert.showAndWait();
 
         } catch (IOException e) {
-            txtCSVMade.setText("Error  CSV: " + e.getMessage());
+            txtZIPMade.setText("Error  CSV: " + e.getMessage());
         }
 
     }
@@ -297,8 +297,6 @@ public class AppController implements Initializable {
      * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..*/
     @FXML
     public void zipFileCSV(ActionEvent event){
-        crearCSV(); //Creamos el archivo CSV
-
         CompletableFuture.runAsync(() -> {
             try {
                 // Crear un archivo de salida ZIP
@@ -323,12 +321,7 @@ public class AppController implements Initializable {
                 zipOut.close();
 
                 // Mostrar mensaje de éxito
-                Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-                alerta.setHeaderText("ZIP");
-                alerta.setContentText("Archivo ZIP Creado");
-                alerta.initStyle(StageStyle.UTILITY);
-
-
+                txtZIPMade.setText("ZIP Creado ..");
             } catch (IOException e) {
                 // Manejar la excepción
                 e.printStackTrace();

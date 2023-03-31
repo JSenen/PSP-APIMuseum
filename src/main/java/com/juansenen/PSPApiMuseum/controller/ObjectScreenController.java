@@ -95,9 +95,9 @@ public class ObjectScreenController implements Initializable {
         ImageView imageView = new ImageView();
 
         //Ajustamos imagen al Panel
-        imageView.setFitWidth(311);
-        imageView.setFitHeight(275);
-        imageView.setPreserveRatio(true);
+        imageView.fitWidthProperty().bind(paneImage.widthProperty());
+        imageView.fitHeightProperty().bind(paneImage.heightProperty());
+        //imageView.setPreserveRatio(true);
 
         paneImage.getChildren().add(imageView);
 
