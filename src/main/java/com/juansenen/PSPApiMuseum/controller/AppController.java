@@ -266,10 +266,11 @@ public class AppController implements Initializable {
     /** Botón crear archivo CSV **/
     @FXML
     public void madeCSV(ActionEvent event) {
-        crearCSV();
+        crearCSV(listObjectToTextArea);
     }
     /** Metodo crear CSV */
-    private void crearCSV(){
+    private void crearCSV(List<String> listaobjetos){
+
 
         //Damos nombre al archivo con la fecha a actual delante
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -282,12 +283,12 @@ public class AppController implements Initializable {
                      CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
 
             // Escribir los elementos de la lista en el archivo CSV
-            for (String elemento : listObjectToTextArea) {
+            for (String elemento : listaobjetos) {
                 csvWriter.writeNext(new String[] { elemento });
             }
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setHeaderText("CSV");
-            alert.setContentText("Archivo CSV Creado");
+            alert.setHeaderText("LISTADO");
+            alert.setContentText("Archivo Creado");
             alert.initStyle(StageStyle.UTILITY); //Sin botones de cierre
             //Damos 3 segundos para que el usuario vea el mensaje mergente
             GenericTask genericTask = new GenericTask(alert);
@@ -308,19 +309,24 @@ public class AppController implements Initializable {
      * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..*/
     @FXML
     public void zipFileCSV(ActionEvent event){
+        generateListObjects(); //Generamos el listado
+
         CompletableFuture.runAsync(() -> {
+
+
             //buscamos en el directorio que le indica el archivo terminado en datoscsv.csv
             File directorio = new File(path);
             File[] archivos = directorio.listFiles((dir, nombre) -> nombre.endsWith("datoscsv.csv"));
 
-            String nombreArchivoZip = "datoscsv.zip";
+            String nombreArchivoZip = "objectsList.zip";
             try {
                 // Crear un archivo de salida ZIP
                 FileOutputStream fos = new FileOutputStream(nombreArchivoZip);
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
 
                 // Agregar un archivo CSV al archivo ZIP
-                File fileToZip = new File("datosCSV.csv");
+
+                File fileToZip = new File("datoscsv.csv");
                 FileInputStream fis = new FileInputStream(fileToZip);
                 ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
                 zipOut.putNextEntry(zipEntry);
@@ -347,6 +353,14 @@ public class AppController implements Initializable {
 
     }
 
+    public void  generateListObjects(){
+        //Creamos un  listado solicitando a la api
+        List<String> objetosToZip = new ArrayList<>();
+        GenerateZIPlistTask generateZIPlistTask = new GenerateZIPlistTask(idObjects,objetosToZip);
+        new Thread(generateZIPlistTask).start();
+        //crearCSV(idObjects);
+        crearCSV(objetosToZip);
+    }
 
 
 }

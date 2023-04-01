@@ -183,15 +183,67 @@ private void crearCSV(){
 ```
 
 
-● Implementar una funcionalidad que permite exportar algún listado (devuelto por
+✅● Implementar una funcionalidad que permite exportar algún listado (devuelto por
 alguna operación de la API) a un CSV y se comprima en zip (La idea es implementarlo usando CompletableFuture). 
+Se ha creado un boton, en el que al pulsarlo. El programa solicita a la api un listado de los titulos y otros datos 
+perteneciente a los objetos que tenemos en el listado del departamento. Y nos comprime un fichero zip con un csv del 
+listado solicitado
+
+```
+ @FXML
+    public void zipFileCSV(ActionEvent event){
+        generateListObjects(); //Generamos el listado
+
+        CompletableFuture.runAsync(() -> {
+
+
+            //buscamos en el directorio que le indica el archivo terminado en datoscsv.csv
+            File directorio = new File(path);
+            File[] archivos = directorio.listFiles((dir, nombre) -> nombre.endsWith("datoscsv.csv"));
+
+            String nombreArchivoZip = "objectsList.zip";
+            try {
+                // Crear un archivo de salida ZIP
+                FileOutputStream fos = new FileOutputStream(nombreArchivoZip);
+                ZipOutputStream zipOut = new ZipOutputStream(fos);
+
+                // Agregar un archivo CSV al archivo ZIP
+
+                File fileToZip = new File("datosCSV.csv");
+                FileInputStream fis = new FileInputStream(fileToZip);
+                ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                zipOut.putNextEntry(zipEntry);
+
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = fis.read(bytes)) >= 0) {
+                    zipOut.write(bytes, 0, length);
+                }
+
+                // Cerrar los streams
+                zipOut.closeEntry();
+                fis.close();
+                zipOut.close();
+
+                // Mostrar mensaje de éxito
+                txtZIPMade.setText("ZIP Creado ..");
+            } catch (IOException e) {
+                // Manejar la excepción
+                e.printStackTrace();
+            }
+        });
+
+
+    }
+
+```
 
 
 ● Crea, utilizando WebFlux, un pequeño servicio web relacionado con la API seleccionada y consúmelo desde alguna zona de la aplicación JavaFX utilizando WebClient
 
 
-✅Utiliza correctamente la clase ObservableList de JavaFX para la visualización de los contenidos en los diferentes controles de JavaFX que decidas utilizar (ComboBox, TableView, ListView, . . .)
+✅●Utiliza correctamente la clase ObservableList de JavaFX para la visualización de los contenidos en los diferentes controles de JavaFX que decidas utilizar (ComboBox, TableView, ListView, . . .)
 Para la viualización de las tablas usadas en JAvaFX, se ha usado ObservableList
 
 
-✅ Realizar el seguimiento del proyecto utilizando la plataforma GitHub 
+✅● Realizar el seguimiento del proyecto utilizando la plataforma GitHub 
