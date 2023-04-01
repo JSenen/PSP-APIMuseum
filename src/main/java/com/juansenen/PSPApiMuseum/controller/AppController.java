@@ -24,7 +24,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import java.io.*;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -265,7 +267,12 @@ public class AppController implements Initializable {
     }
     /** Metodo crear CSV */
     private void crearCSV(){
-        File file = new File("datosCSV.csv");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String fecha = dateFormat.format(new Date());
+        String nombreArchivo = fecha + "datoscsv.csv";
+
+        File file = new File(nombreArchivo);
         try (FileWriter writer = new FileWriter(file);
              CSVWriter csvWriter = new CSVWriter(writer, ',', CSVWriter.DEFAULT_QUOTE_CHARACTER,
                      CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
@@ -298,9 +305,13 @@ public class AppController implements Initializable {
     @FXML
     public void zipFileCSV(ActionEvent event){
         CompletableFuture.runAsync(() -> {
+            File directorio = new File(path);
+            File[] archivos = directorio.listFiles((dir, nombre) -> nombre.endsWith("datoscsv.csv"));
+
+            String nombreArchivoZip = "datoscsv.zip";
             try {
                 // Crear un archivo de salida ZIP
-                FileOutputStream fos = new FileOutputStream("datosZIP.zip");
+                FileOutputStream fos = new FileOutputStream(nombreArchivoZip);
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
 
                 // Agregar un archivo CSV al archivo ZIP
