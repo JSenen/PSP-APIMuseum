@@ -252,12 +252,15 @@ public class AppController implements Initializable {
      **/
     @FXML
     public void delObject(ActionEvent event) {
-        int indexObject = Integer.parseInt(txtFieldDelete.getText());
-        //Eliminamos el objeto seleccionado
-        listObjectToTextArea.remove(indexObject);
 
-        ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea, tAreaObejtosList);
-        new Thread(listObjectsTask).start();
+        //Recuperamos numero introducido
+        int indexObject = Integer.parseInt(txtFieldDelete.getText());
+        if (indexObject <= listObjectToTextArea.size()){
+            //Eliminamos el objeto seleccionado
+            listObjectToTextArea.remove(indexObject);
+            ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea, tAreaObejtosList);
+            new Thread(listObjectsTask).start();
+        }
 
     }
     /** Botón crear archivo CSV **/
@@ -268,6 +271,7 @@ public class AppController implements Initializable {
     /** Metodo crear CSV */
     private void crearCSV(){
 
+        //Damos nombre al archivo con la fecha a actual delante
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String fecha = dateFormat.format(new Date());
         String nombreArchivo = fecha + "datoscsv.csv";
@@ -305,6 +309,7 @@ public class AppController implements Initializable {
     @FXML
     public void zipFileCSV(ActionEvent event){
         CompletableFuture.runAsync(() -> {
+            //buscamos en el directorio que le indica el archivo terminado en datoscsv.csv
             File directorio = new File(path);
             File[] archivos = directorio.listFiles((dir, nombre) -> nombre.endsWith("datoscsv.csv"));
 
