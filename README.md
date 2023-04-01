@@ -11,6 +11,8 @@ Requisitos
 
 ✅● La aplicación deberá utilizar técnicas de programación reactiva utilizando la librería RxJava en algún momento
 Para todas las operaciones de la aplicación, se ha seguido un modelo Observable de eventos utilizando la libreria RxJava
+
+
 ✅● Se mostrará un listado de datos utilizando dos operaciones diferentes de la API.
 En la pantalla inicial se muestran 2 tablas, en una de ellas el listado de Departamentos que nos ofrece la api y que
 se carga desde el inicio de la aplicación. 
@@ -30,6 +32,7 @@ Y despues pasar esos Ids a otra consulta en la Api para obtener los objetos
     Observable<ObjectsByID> loadOneObject(@Path("objectId") int objectId);  
     /** Busqueda de todos los datos de un objeto por su Id */
 ```
+
 
 ✅● Se mostrará información detallada de los items de los dos listados anteriores.
 Del listado de departaemntos ofrecemos los datos de nombre y total de objetos de los que dispone
@@ -61,6 +64,8 @@ Del listado de objetosm podemos seleccionar cualquiera y se nos abrira una venta
 
     }
 ```
+
+
 ✅● Todas las operaciones de carga de datos se harán en segundo plano y se mostrará una barra de progreso o similar 
 al usuario
 Para todas las operaciones que se efectuan en segundo plano, el usuario puede observar un texto que le indica la carga 
@@ -68,6 +73,8 @@ de datos así como un indicador visual de la libreria JavaFX
 ```
 progressIndicator.setVisible(true);
 ```
+
+
 ✅● Incorporar alguna operación de búsqueda o filtrado sobre los datos cargados de la API 
 (búsqueda o filtrado que se hará desde la aplicación JavaFX, diferentes a las opciones de filtrado que permita la API)
 Los objetos seleccionados que vamos viendo los detalles, se van agrupando en memoria por medio de una Lista que nos muestra 
@@ -99,7 +106,11 @@ Borramos de la lista codigo:
     }
 ```
 
+
+
 Otras funcionalidades
+
+
 ✅● Cargar algún tipo de contenido gráfico a partir de información dada por la API (una foto, por ejemplo)
 En la pantalla que se ha creado al efecto para mostrar los detalles del objeto seleccionado, se ha añadido un campo
 ImageView de la libreria JAvaFX, para poder mostrar la imagen (de tenerla) que nos ofrece la API por medio de un
@@ -170,9 +181,17 @@ private void crearCSV(){
 
     }
 ```
+
+
 ● Implementar una funcionalidad que permite exportar algún listado (devuelto por
-alguna operación de la API) a un CSV y se comprima en zip (La idea es implementarlo usando CompletableFuture). Teneis aqui un tutorial sobre cómo comprimir en ZIP con Java
+alguna operación de la API) a un CSV y se comprima en zip (La idea es implementarlo usando CompletableFuture). 
+
+
 ● Crea, utilizando WebFlux, un pequeño servicio web relacionado con la API seleccionada y consúmelo desde alguna zona de la aplicación JavaFX utilizando WebClient
+
+
 ✅Utiliza correctamente la clase ObservableList de JavaFX para la visualización de los contenidos en los diferentes controles de JavaFX que decidas utilizar (ComboBox, TableView, ListView, . . .)
 Para la viualización de las tablas usadas en JAvaFX, se ha usado ObservableList
+
+
 ✅ Realizar el seguimiento del proyecto utilizando la plataforma GitHub 
