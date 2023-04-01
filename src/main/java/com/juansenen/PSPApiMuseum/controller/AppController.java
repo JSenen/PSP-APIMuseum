@@ -48,7 +48,7 @@ public class AppController implements Initializable {
     @FXML
     public TextField txtFieldDelete; //Se usa para seleccionar un elemento del Text Area
     @FXML
-    public ProgressIndicator progressIndicator;
+    public ProgressIndicator progressIndicator; //Indica la carga en segundo plano
     @FXML
     public Text txtTotal, txtTotalDepart, messageDownload, txtZIPMade;
     public List<Integer> idObjects = new ArrayList<>(); //Lista para guardar Ids de Objetos en memoria
