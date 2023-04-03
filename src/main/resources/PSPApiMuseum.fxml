@@ -52,7 +52,7 @@
       <TextField fx:id="txtFieldDelete" alignment="CENTER" layoutX="209.0" layoutY="611.0" prefHeight="25.0" prefWidth="82.0" promptText="Nº a borrar" />
       <ImageView fx:id="imgLogo" fitHeight="116.0" fitWidth="130.0" layoutX="823.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@img/logoMET.jpeg" />
+            <Image url="@img/logoMET.png" />
          </image></ImageView>
       <Button fx:id="butCSV" layoutX="432.0" layoutY="611.0" mnemonicParsing="false" onAction="#madeCSV" style="-fx-background-color: green;" text="CSV" textFill="WHITE" />
       <Text fill="#b90f0f" layoutX="350.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Metropolitan Museum  of Art" textAlignment="CENTER" wrappingWidth="466.658203125">
