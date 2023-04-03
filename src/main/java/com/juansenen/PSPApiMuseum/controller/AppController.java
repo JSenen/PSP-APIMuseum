@@ -65,7 +65,8 @@ public class AppController implements Initializable {
     @FXML
     public ImageView imgLogo;
 
-    List<String> listObjectToTextArea;
+    public List<String> listObjectToTextArea;
+    public List<String> objetosAlist;
     public String path = System.getProperty("user.dir"); //Variable ruta del usuario
 
     public ObjectsByID objectsByID;
@@ -275,7 +276,7 @@ public class AppController implements Initializable {
         //Damos nombre al archivo con la fecha a actual delante
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String fecha = dateFormat.format(new Date());
-        String nombreArchivo = fecha + "datoscsv.csv";
+        String nombreArchivo = "datoscsv.csv";
 
         File file = new File(nombreArchivo);
         try (FileWriter writer = new FileWriter(file);
@@ -354,13 +355,15 @@ public class AppController implements Initializable {
     }
 
     public void  generateListObjects(){
-        //Creamos un  listado solicitando a la api
-        List<String> objetosToZip = new ArrayList<>();
-        GenerateZIPlistTask generateZIPlistTask = new GenerateZIPlistTask(idObjects,objetosToZip);
-        new Thread(generateZIPlistTask).start();
-        //crearCSV(idObjects);
-        crearCSV(objetosToZip);
-    }
+        //TODO Pasar metodo a Thread
+        //Pasamos los datos de la ObservableList a una List de String
+        objetosAlist = new ArrayList<>();
+        for (ObjectsByID objects: tableObjects.getItems()) {
+            objetosAlist.add(objects.toString());
+        }
+        //Creamos CSV con los datos recogidos
+        crearCSV(objetosAlist);
 
+    }
 
 }
