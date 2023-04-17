@@ -228,23 +228,14 @@ public class AppController implements Initializable {
 
     public void setTotalNumberObjects() {
         txtTotal.setText("Cargando...");
-        Consumer<ObjectsMain> totalObj = (info) -> {            //Creamos el consumidor
-            txtTotal.setText(String.valueOf(info.getTotal()));
-
-        };
-
-        TotalObjectTask totalObjectTask = new TotalObjectTask(totalObj);  //Creamos un hilo
+        TotalObjectTask totalObjectTask = new TotalObjectTask(txtTotal);  //Creamos un hilo
         new Thread(totalObjectTask).start();                             // Ejecutamos hilo
-
     }
 
     public void setTotalDeparments() {
 
-        Consumer<List<Department>> dep = (info) -> {
-            tableMain.setItems(FXCollections.observableArrayList(info));
-            progressIndicator.setVisible(false);
-        };
-        GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(dep, progressIndicator);
+
+        GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(tableMain, progressIndicator);
         new Thread(getTotalDepartmentTask).start();
     }
 
@@ -271,38 +262,11 @@ public class AppController implements Initializable {
     }
     /** Metodo crear CSV */
     private void crearCSV(List<String> listaobjetos){
-
-
-        //Damos nombre al archivo con la fecha a actual delante
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String fecha = dateFormat.format(new Date());
-        String nombreArchivo = "datoscsv.csv";
-
-        File file = new File(nombreArchivo);
-        try (FileWriter writer = new FileWriter(file);
-             CSVWriter csvWriter = new CSVWriter(writer, ',', CSVWriter.DEFAULT_QUOTE_CHARACTER,
-                     CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
-
-            // Escribir los elementos de la lista en el archivo CSV
-            for (String elemento : listaobjetos) {
-                csvWriter.writeNext(new String[] { elemento });
-            }
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setHeaderText("LISTADO");
-            alert.setContentText("Archivo Creado");
-            alert.initStyle(StageStyle.UTILITY); //Sin botones de cierre
-            //Damos 3 segundos para que el usuario vea el mensaje mergente
-            GenericTask genericTask = new GenericTask(alert);
-            new Thread(genericTask).start();
-            alert.showAndWait();
-
-        } catch (IOException e) {
-            txtZIPMade.setText("Error  CSV: " + e.getMessage());
-        }
+        CSVCreatorTask task = new CSVCreatorTask(listaobjetos,txtZIPMade);
+        Thread thread = new Thread(task);
+        thread.start();
 
     }
-
-
     /** Este código crea un objeto ZipOutputStream que se usa para crear el archivo ZIP
      * y agregar el archivo CSV al archivo ZIP.
      * El proceso de compresión se ejecuta en segundo plano utilizando un CompletableFuture.
