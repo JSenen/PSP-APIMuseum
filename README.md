@@ -18,6 +18,14 @@ Requisitos
 ✅● La aplicación deberá utilizar técnicas de programación reactiva utilizando la librería RxJava en algún momento
 Para todas las operaciones de la aplicación, se ha seguido un modelo Observable de eventos utilizando la libreria RxJava
 
+```
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>2.2.21</version>
+        </dependency>`
+```
+
 
 ✅● Se mostrará un listado de datos utilizando dos operaciones diferentes de la API.
 En la pantalla inicial se muestran 2 tablas, en una de ellas el listado de Departamentos que nos ofrece la api y que
@@ -38,7 +46,12 @@ Y despues pasar esos Ids a otra consulta en la Api para obtener los objetos
     Observable<ObjectsByID> loadOneObject(@Path("objectId") int objectId);  
     /** Busqueda de todos los datos de un objeto por su Id */
 ```
+Se ha usado otra petición a la API, para poder buscar filtrando los resultados por un tema, palabra, etc
 
+```
+@GET("search")
+    Observable<ObjectsMain> loadObjectsByDepartment(@Query("departmentId") int departmentIds, @Query("q") String cadena)
+```
 
 ✅● Se mostrará información detallada de los items de los dos listados anteriores.
 Del listado de departaemntos ofrecemos los datos de nombre y total de objetos de los que dispone
@@ -55,18 +68,28 @@ Del listado de departaemntos ofrecemos los datos de nombre y total de objetos de
 
     }
 ```
-Del listado de objetosm podemos seleccionar cualquiera y se nos abrira una ventalla en detalle de ese objeto
+Del listado de objetos, podemos seleccionar cualquiera de la tabla con doble click y se nos abrira una ventana en detalle de ese objeto
 ```
-    /**
-     * Tabla Titulos de Obras
-     **/
-    public void prepareTableObjects() {
+    @FXML
+    public void tableObjectClickItem(MouseEvent event) throws IOException {
+        objectsByID = new ObjectsByID();
 
-        TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("Titulo");
-        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        if (event.getClickCount() == 2) {//Pulsar 2 veces sobre un elemento de la tabla para elegir objeto
+            //Recuperamos elemento
+            objectsByID = tableObjects.getSelectionModel().getSelectedItem();
 
+            //Añadimos el elemento a la lista
+            listObjectToTextArea.add("---> TITULO: " + objectsByID.getTitle() + " --ARTISTA: " + objectsByID.getArtistDisplayName() +
+                    " --FECHA: " + objectsByID.getObjectDate() + " --PAIS: " + objectsByID.getCountry());
+            //Hilo para confeccionar el listado del TextArea
+            ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea, tAreaObejtosList);
+            new Thread(listObjectsTask).start();
 
-        tableObjects.getColumns().addAll(titleColumn);
+            //Abrimos segunda ventana
+            launchScreen(objectsByID);
+
+        }
+
 
     }
 ```
@@ -75,15 +98,24 @@ Del listado de objetosm podemos seleccionar cualquiera y se nos abrira una venta
 ✅● Todas las operaciones de carga de datos se harán en segundo plano y se mostrará una barra de progreso o similar 
 al usuario
 Para todas las operaciones que se efectuan en segundo plano, el usuario puede observar un texto que le indica la carga 
-de datos así como un indicador visual de la libreria JavaFX
+de datos así como un indicador visual de la libreria JavaFX.
 ```
 progressIndicator.setVisible(true);
 ```
 
+En el caso de la carga de los objetos de un departamento, si que se puede observar el porcentaje de lo que se lleva descargado
+
+```
+ updateProgress(counterprogress,idObjects.size()); //Actualizamos el estado del progreso
+                double progress = counterprogress / idObjects.size(); // calcular el progreso como un porcentaje
+                progressIndicator.setProgress(progress); // actualizar el valor del progreso en el ProgressIndicator
+                counterprogress++;
+
+```
 
 ✅● Incorporar alguna operación de búsqueda o filtrado sobre los datos cargados de la API 
 (búsqueda o filtrado que se hará desde la aplicación JavaFX, diferentes a las opciones de filtrado que permita la API)
-Los objetos seleccionados que vamos viendo los detalles, se van agrupando en memoria por medio de una Lista que nos muestra 
+Los objetos seleccionados que vamos seleccionando para ver los detalles, se van agrupando en memoria por medio de una Lista que nos muestra 
 los campos básicos en un text-area. El usuario puede ver ese listado o borrar el que no le interese. Para lo que no usa la
 api en ningún momento.
 Recogemos en la lista código:
