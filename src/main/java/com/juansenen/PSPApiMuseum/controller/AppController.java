@@ -268,7 +268,7 @@ public class AppController implements Initializable {
      * Cuando la compresión se completa con éxito, se muestra un mensaje.
      * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..*/
     @FXML
-    public void zipFileCSV(ActionEvent event){ //TODO Fix ZIP
+    public void zipFileCSV(ActionEvent event){
         generateListObjects(); //Generamos el listado
 
         /** CompletableFuture es clase que representa el resultado futuro
@@ -276,10 +276,22 @@ public class AppController implements Initializable {
          */
         CompletableFuture.runAsync(() -> {
 
+            //Creamos el archivo csv
+            crearCSV(listObjectToTextArea);
 
             //buscamos en el directorio que le indica el archivo terminado en datoscsv.csv
             File directorio = new File(path);
             File[] archivos = directorio.listFiles((dir, nombre) -> nombre.endsWith("datoscsv.csv"));
+
+            //Comprobamos si el archivo csv ya se creo y si no lo crearemos
+            File csvFile = new File("datoscsv.csv");
+            if (!csvFile.exists()) {
+                try {
+                    csvFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             String nombreArchivoZip = "objectsList.zip";
             try {
