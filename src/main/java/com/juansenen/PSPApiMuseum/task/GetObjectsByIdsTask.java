@@ -20,6 +20,7 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
     private TableView<ObjectsByID> tableObjects;;
     private ProgressIndicator progressIndicator;
     private Text messageDownload;
+    private double counterprogress;
 
     private int ids;
     public GetObjectsByIdsTask(List<Integer> idObjects,
@@ -33,6 +34,7 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
         this.tableObjects = tableObjects;
         this.progressIndicator = progressIndicator;
         this.messageDownload = messageDownload;
+        this.counterprogress = 0;
 
     }
 
@@ -40,6 +42,8 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
     protected ObjectsByID call() throws Exception {
         service = new MetService();
         progressIndicator.setVisible(true);
+        progressIndicator.setPrefSize(50, 50); // Tamaño en píxeles
+        progressIndicator.setProgress(0.0); //Inicializamos el Progress Indicator
         messageDownload.setText("Cargando ...");
         for (Integer ids: idObjects){       //Recorremos el List de Ids que pertenecen al Departamento
 
@@ -50,6 +54,11 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
                         info.getTitle(),info.getCountry(), info.getCulture(),info.getPeriod(), info.getArtistDisplayName(),
                         info.getArtistDisplayBio(), info.getArtistNationality(), info.getObjectDate(), info.getMedium(),
                         info.getDimensions()));
+
+                updateProgress(counterprogress,idObjects.size()); //Actualizamos el estado del progreso
+                double progress = counterprogress / idObjects.size(); // calcular el progreso como un porcentaje
+                progressIndicator.setProgress(progress); // actualizar el valor del progreso en el ProgressIndicator
+                counterprogress++;
 
 
             };

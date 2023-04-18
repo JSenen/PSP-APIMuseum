@@ -73,7 +73,6 @@ public class AppController implements Initializable {
 
     public int IDitemSelected;
     public String cadena;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -202,16 +201,12 @@ public class AppController implements Initializable {
     private void getTotalObjectsByDepartment() {
 
         idObjects.clear();
-
-        Consumer<ObjectsMain> deparObjs = (info) -> {
-            txtTotalDepart.setText(String.valueOf(info.getTotal()));
-            txtTotalDepart.setFill(Color.GREEN);
-            idObjects.addAll(info.getObjectIDs()); //Añadimos a la lista los IDs de los objetos del departamento
+        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected, cadena,
+                progressIndicator, textFieldSearch,txtTotalDepart);
+        getIDsFromDepartmentTask.setOnSucceeded(event -> {
+            idObjects = getIDsFromDepartmentTask.getValue();
             getObjectstoTable(idObjects);
-            textFieldSearch.setText("");
-        };
-        GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected, cadena, deparObjs,
-                progressIndicator);
+        });
         new Thread(getIDsFromDepartmentTask).start();
     }
 
@@ -273,9 +268,12 @@ public class AppController implements Initializable {
      * Cuando la compresión se completa con éxito, se muestra un mensaje.
      * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..*/
     @FXML
-    public void zipFileCSV(ActionEvent event){
+    public void zipFileCSV(ActionEvent event){ //TODO Fix ZIP
         generateListObjects(); //Generamos el listado
 
+        /** CompletableFuture es clase que representa el resultado futuro
+         * de una operación asíncrona ; ejecuta tarea en paralelo y esperar su resultado
+         */
         CompletableFuture.runAsync(() -> {
 
 
@@ -319,13 +317,13 @@ public class AppController implements Initializable {
     }
 
     public void  generateListObjects(){
-        //TODO Pasar metodo a Thread
+
         //Pasamos los datos de la ObservableList a una List de String
         objetosAlist = new ArrayList<>();
         for (ObjectsByID objects: tableObjects.getItems()) {
             objetosAlist.add(objects.toString());
         }
-        //Creamos CSV con los datos recogidos
+        //Creamos CSV con los datos recogidos de la tabla objetos
         crearCSV(objetosAlist);
 
     }

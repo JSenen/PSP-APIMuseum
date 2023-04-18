@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class CSVCreatorTask extends Task<Void> {
 
@@ -37,13 +38,19 @@ public class CSVCreatorTask extends Task<Void> {
                      CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END)) {
 
             // Escribir los elementos de la lista en el archivo CSV
-            for (String elemento : listaobjetos) {
-                csvWriter.writeNext(new String[]{elemento});
-            }
+            /** CompletableFuture es clase que representa el resultado futuro
+             * de una operación asíncrona ; ejecuta tarea en paralelo y esperar su resultado
+             */
+            CompletableFuture.runAsync(() -> {
+                for (String elemento : listaobjetos) {
+                    csvWriter.writeNext(new String[]{elemento});
+                }
+            }).join();
+
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("LISTADO");
-                alert.setContentText("Archivo Creado");
+                alert.setContentText("Creado archivo en "+System.getProperty("user.home")); //Directorio el usuario
                 alert.initStyle(StageStyle.UTILITY); //Sin botones de cierre
                 alert.showAndWait();
             });
