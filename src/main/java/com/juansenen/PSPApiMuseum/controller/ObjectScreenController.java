@@ -5,22 +5,15 @@ import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
 import com.juansenen.PSPApiMuseum.task.GetImagenTask;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ResourceBundle;
 
 public class ObjectScreenController implements Initializable {
@@ -33,20 +26,15 @@ public class ObjectScreenController implements Initializable {
     private Pane paneImage;
     @FXML
     private ProgressIndicator progressionImg;
-
-
     private ObjectsByID objectsByID;
 
     public ObjectScreenController(ObjectsByID objectsByID) {
         this.objectsByID = objectsByID;
-
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initData(objectsByID);
-
-
     }
 
     public void initData(ObjectsByID selectedObject) {
@@ -105,6 +93,4 @@ public class ObjectScreenController implements Initializable {
         Image image = new Image(urlString);
         imageView.setImage(image);
     }
-
-
 }

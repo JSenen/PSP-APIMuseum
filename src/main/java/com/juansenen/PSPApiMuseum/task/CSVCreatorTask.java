@@ -6,7 +6,6 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.text.Text;
 import javafx.stage.StageStyle;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

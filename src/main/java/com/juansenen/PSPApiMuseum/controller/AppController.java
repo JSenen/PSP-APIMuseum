@@ -2,10 +2,7 @@ package com.juansenen.PSPApiMuseum.controller;
 
 import com.juansenen.PSPApiMuseum.domain.Department;
 import com.juansenen.PSPApiMuseum.domain.ObjectsByID;
-import com.juansenen.PSPApiMuseum.domain.ObjectsMain;
 import com.juansenen.PSPApiMuseum.task.*;
-import com.opencsv.CSVWriter;
-import io.reactivex.functions.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,15 +15,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+
 import java.io.*;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -55,7 +49,6 @@ public class AppController implements Initializable {
     //Observable List para la table de Objetos por titulo
     @FXML
     public ObservableList<ObjectsByID> titleObjectsFromDepartment;
-
     @FXML
     public TableView<Department> tableMain = new TableView<>();
     @FXML
@@ -68,11 +61,10 @@ public class AppController implements Initializable {
     public List<String> listObjectToTextArea;
     public List<String> objetosAlist;
     public String path = System.getProperty("user.dir"); //Variable ruta del usuario
-
     public ObjectsByID objectsByID;
-
     public int IDitemSelected;
     public String cadena;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -85,7 +77,6 @@ public class AppController implements Initializable {
         progressIndicator.setVisible(true);
     }
 
-
     /**
      * Tabla Departamentos
      **/
@@ -95,7 +86,6 @@ public class AppController implements Initializable {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("displayName"));
 
         tableMain.getColumns().add(nameColumn);
-
     }
 
     /**
@@ -105,7 +95,6 @@ public class AppController implements Initializable {
 
         TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("Titulo");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-
 
         tableObjects.getColumns().addAll(titleColumn);
 
@@ -141,7 +130,6 @@ public class AppController implements Initializable {
             textFieldSearch.setText("");
             getTotalObjectsByDepartment();
         }
-
     }
 
     /**
@@ -165,10 +153,7 @@ public class AppController implements Initializable {
 
             //Abrimos segunda ventana
             launchScreen(objectsByID);
-
         }
-
-
     }
 
     /**
@@ -202,7 +187,7 @@ public class AppController implements Initializable {
 
         idObjects.clear();
         GetIDsFromDepartmentTask getIDsFromDepartmentTask = new GetIDsFromDepartmentTask(IDitemSelected, cadena,
-                progressIndicator, textFieldSearch,txtTotalDepart);
+                progressIndicator, textFieldSearch, txtTotalDepart);
         getIDsFromDepartmentTask.setOnSucceeded(event -> {
             idObjects = getIDsFromDepartmentTask.getValue();
             getObjectstoTable(idObjects);
@@ -229,7 +214,6 @@ public class AppController implements Initializable {
 
     public void setTotalDeparments() {
 
-
         GetTotalDepartmentTask getTotalDepartmentTask = new GetTotalDepartmentTask(tableMain, progressIndicator);
         new Thread(getTotalDepartmentTask).start();
     }
@@ -242,47 +226,51 @@ public class AppController implements Initializable {
 
         //Recuperamos numero introducido
         int indexObject = Integer.parseInt(txtFieldDelete.getText());
-        if (indexObject <= listObjectToTextArea.size()){
+        if (indexObject <= listObjectToTextArea.size()) {
             //Eliminamos el objeto seleccionado
             listObjectToTextArea.remove(indexObject);
             ListObjectsTask listObjectsTask = new ListObjectsTask(listObjectToTextArea, tAreaObejtosList);
             new Thread(listObjectsTask).start();
         }
-
     }
-    /** Botón crear archivo CSV **/
+
+    /**
+     * Botón crear archivo CSV
+     **/
     @FXML
     public void madeCSV(ActionEvent event) {
         crearCSV(listObjectToTextArea);
     }
-    /** Metodo crear CSV */
-    private void crearCSV(List<String> listaobjetos){
-        CSVCreatorTask task = new CSVCreatorTask(listaobjetos,txtZIPMade);
+
+    /**
+     * Metodo crear CSV
+     */
+    private void crearCSV(List<String> listaobjetos) {
+        CSVCreatorTask task = new CSVCreatorTask(listaobjetos, txtZIPMade);
         Thread thread = new Thread(task);
         thread.start();
-
     }
-    /** Este código crea un objeto ZipOutputStream que se usa para crear el archivo ZIP
+
+    /**
+     * Este código crea un objeto ZipOutputStream que se usa para crear el archivo ZIP
      * y agregar el archivo CSV al archivo ZIP.
      * El proceso de compresión se ejecuta en segundo plano utilizando un CompletableFuture.
      * Cuando la compresión se completa con éxito, se muestra un mensaje.
-     * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..*/
+     * Si ocurre alguna excepción, se maneja imprimiendo el rastro de la pila en la consola..
+     */
     @FXML
-    public void zipFileCSV(ActionEvent event){
+    public void zipFileCSV(ActionEvent event) {
         generateListObjects(); //Generamos el listado
 
         /** CompletableFuture es clase que representa el resultado futuro
          * de una operación asíncrona ; ejecuta tarea en paralelo y esperar su resultado
          */
         CompletableFuture.runAsync(() -> {
-
             //Creamos el archivo csv
             crearCSV(listObjectToTextArea);
-
             //buscamos en el directorio que le indica el archivo terminado en datoscsv.csv
             File directorio = new File(path);
             File[] archivos = directorio.listFiles((dir, nombre) -> nombre.endsWith("datoscsv.csv"));
-
             //Comprobamos si el archivo csv ya se creo y si no lo crearemos
             File csvFile = new File("datoscsv.csv");
             if (!csvFile.exists()) {
@@ -324,20 +312,16 @@ public class AppController implements Initializable {
                 e.printStackTrace();
             }
         });
-
-
     }
 
-    public void  generateListObjects(){
+    public void generateListObjects() {
 
         //Pasamos los datos de la ObservableList a una List de String
         objetosAlist = new ArrayList<>();
-        for (ObjectsByID objects: tableObjects.getItems()) {
+        for (ObjectsByID objects : tableObjects.getItems()) {
             objetosAlist.add(objects.toString());
         }
         //Creamos CSV con los datos recogidos de la tabla objetos
         crearCSV(objetosAlist);
-
     }
-
 }
