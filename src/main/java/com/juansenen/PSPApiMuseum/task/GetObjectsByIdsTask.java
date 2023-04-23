@@ -48,13 +48,11 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
         progressIndicator.setProgress(0.0); //Inicializamos el Progress Indicator
         messageDownload.setText("Cargando ...");
 
-        // Lista temporal para ir agregando los objetos según se vayan recibiendo
-        List<ObjectsByID> tempObjectsList = new ArrayList<>();
-
-        for (Integer ids: idObjects){       //Recorremos el List de Ids que pertenecen al Departamento
+        for (Integer ids: idObjects) {
+            // Lista temporal para ir agregando los objetos según se vayan recibiendo
+            List<ObjectsByID> tempObjectsList = new ArrayList<>();
 
             Consumer<ObjectsByID> obj = (info) -> {
-
                 // Agregar el objeto a la lista temporal
                 tempObjectsList.add(new ObjectsByID(info.getObjectID(), info.getAccessionNumber(),
                         info.getAccessionYear(), info.isPublicDomain(), info.getPrimaryImage(), info.getPrimaryImageSmall(),
@@ -71,19 +69,16 @@ public class GetObjectsByIdsTask extends Task<ObjectsByID> {
                 double progress = counterprogress / idObjects.size(); // calcular el progreso como un porcentaje
                 progressIndicator.setProgress(progress); // actualizar el valor del progreso en el ProgressIndicator
                 counterprogress++;
-
-
             };
+
             service.getObjectById(ids).subscribe(obj);
-
-            // Agregar los objetos descargados a la lista final
-            titleObjectsFromDepartment.addAll(tempObjectsList);
-
-
         }
-        //tableObjects.setItems(FXCollections.observableArrayList(titleObjectsFromDepartment));
+
         progressIndicator.setVisible(false);
         messageDownload.setText("");
+
+        // Agregar los objetos descargados a la lista final
+        titleObjectsFromDepartment.addAll(tableObjects.getItems());
 
         return null;
     }

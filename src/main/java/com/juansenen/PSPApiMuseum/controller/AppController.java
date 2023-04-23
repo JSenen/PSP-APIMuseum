@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -20,9 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -57,6 +56,10 @@ public class AppController implements Initializable {
     public TextArea tAreaObejtosList;
     @FXML
     public ImageView imgLogo;
+    @FXML
+    private TabPane tabPaneObjects;
+    private TableView<ObjectsByID> activeTable;
+    private Map<String, TableView<ObjectsByID>> tablesBySearch = new HashMap<>();
 
     public List<String> listObjectToTextArea;
     public List<String> objetosAlist;
@@ -125,10 +128,42 @@ public class AppController implements Initializable {
                 alert.setHeaderText("Mensaje de información");
                 alert.setContentText("Debe introducir una palabra de filtrado");
                 alert.showAndWait();
+            } else {
+                // Verificar si ya existe una tabla para la búsqueda actual
+                TableView<ObjectsByID> tableObjects = tablesBySearch.get(cadena);
+                if (tableObjects == null) {
+                    // Crear una nueva pestaña para la búsqueda actual
+                    Tab newTab = new Tab("Resultados: " + cadena);
+                    tabPaneObjects.getTabs().add(newTab);
+
+                    // Crear una nueva TableView para la búsqueda actual
+                    tableObjects = new TableView<>();
+
+                    // Agregar columnas a la TableView
+                    TableColumn<ObjectsByID, String> titleColumn = new TableColumn<>("Titulo");
+                    titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+                    tableObjects.getColumns().addAll(titleColumn);
+
+                    // Agregar la nueva tabla al mapa
+                    tablesBySearch.put(cadena, tableObjects);
+
+                    // Agregar la nueva tabla a la pestaña correspondiente
+                    newTab.setContent(tableObjects);
+                } else {
+                    // Mostrar la tabla existente en la pestaña correspondiente
+                    for (Tab tab : tabPaneObjects.getTabs()) {
+                        if (tab.getText().equals("Resultados: " + cadena)) {
+                            tab.setContent(tableObjects);
+                            break;
+                        }
+                    }
+                }
+
+                titleObjectsFromDepartment.clear();
+                textFieldSearch.setText("");
+                getTotalObjectsByDepartment();
             }
-            titleObjectsFromDepartment.clear();
-            textFieldSearch.setText("");
-            getTotalObjectsByDepartment();
         }
     }
 
@@ -155,6 +190,7 @@ public class AppController implements Initializable {
             launchScreen(objectsByID);
         }
     }
+
 
     /**
      * Lanzamos ventana independiente para mostrar detalles del objeto
