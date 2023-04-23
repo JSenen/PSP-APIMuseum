@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="555.0" prefWidth="849.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text fx:id="txtTitle" layoutX="19.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="title" textAlignment="CENTER" wrappingWidth="576.21630859375">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font></Text>
+      <Label layoutX="15.0" layoutY="516.0" text="Número de identificación:" />
+      <Label layoutX="607.0" layoutY="42.0" text="Año de adquisición:" />
+      <Label layoutX="34.0" layoutY="290.0" text="Cultura" />
+      <Label layoutX="33.0" layoutY="167.0" text="Periodo" />
+      <Label layoutX="33.0" layoutY="222.0" text="País:" />
+      <Label layoutX="20.0" layoutY="70.0" text="Nombre del Autor:" />
+      <Label layoutX="35.0" layoutY="104.0" text="Biografía:" />
+      <Label layoutX="32.0" layoutY="262.0" text="Nacionalidad:" />
+      <Label layoutX="674.0" layoutY="19.0" text="Fecha :" />
+      <Label layoutX="35.0" layoutY="322.0" text="Medio:" />
+      <Label layoutX="33.0" layoutY="134.0" text="Dimensiones:" />
+      <Text fx:id="txtAuthorName" layoutX="137.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="293.21630859375">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtBiography" layoutX="89.0" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="725.21630859375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtMedium" layoutX="80.0" layoutY="336.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="352.21630859375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtDimensions" layoutX="119.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="708.21630859375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtPeriod" layoutX="92.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="345.21630859375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtCountry" layoutX="69.0" layoutY="236.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="360.21630859375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtNacionality" layoutX="112.0" layoutY="276.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="306.21630859375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtDate" layoutX="719.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="120.49999999999989">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtAccesionYear" layoutX="719.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="106.49999999999989">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtCulture" layoutX="80.0" layoutY="304.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="338.5">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtIdentificationNumber" layoutX="158.0" layoutY="530.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="214.21630859375">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <CheckBox fx:id="chkPublicDomain" layoutX="694.0" layoutY="507.0" mnemonicParsing="false" text="Dominio Público">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </CheckBox>
+      <Pane fx:id="paneImage" layoutX="442.0" layoutY="152.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="341.0" prefWidth="389.0" style="-fx-border-color: red;" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="442.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="152.0">
+         <children>
+            <ProgressIndicator fx:id="progressionImg" layoutX="172.0" layoutY="136.0" prefHeight="68.0" prefWidth="60.0" />
+            <Text fx:id="txtProgressionImg" layoutX="143.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+         </children>
+      </Pane>
+      <Line endX="794.0" endY="1.0" layoutX="47.0" layoutY="59.0" startX="-27.207107543945312" startY="1.0" stroke="#e40707" />
+      <ImageView fitHeight="114.0" fitWidth="121.0" layoutX="35.0" layoutY="367.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@img/logoMET.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

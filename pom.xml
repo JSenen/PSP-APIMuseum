@@ -56,7 +56,15 @@
             <artifactId>javafx-fxml</artifactId>
             <version>19.0.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+        <!-- Creacion de CSV -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.7.1</version>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
